@@ -1,0 +1,75 @@
+ion-header {
+  --background: #3880ff;
+  color: white;
+
+  ion-toolbar {
+    --background: #3880ff;
+    --color: white;
+  }
+}
+
+.settings-section {
+  background: #f4f4f4;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  margin-top: 20px;
+  ion-item {
+    --background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.search-results {
+  margin-top: 15px;
+  ion-item {
+    --background: #e0f7fa;
+    margin-bottom: 5px;
+    border-radius: 8px;
+  }
+}
+
+.doctors-section {
+  margin-top: 20px;
+  h2 {
+    color: #3880ff;
+    margin-bottom: 10px;
+  }
+
+  ion-list {
+    background: transparent;
+  }
+
+  ion-item {
+    --background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-avatar {
+    img {
+      border-radius: 50%;
+    }
+  }
+}
+
+ion-footer {
+  ion-toolbar {
+    --background: #ffffff;
+    border-top: 1px solid #dcdcdc;
+  }
+
+  ion-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    --color: #3880ff;
+  }
+}
