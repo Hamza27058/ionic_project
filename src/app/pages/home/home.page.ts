@@ -23,11 +23,25 @@ export class HomePage {
     { name: 'Dr. Martin', specialty: 'Dermatologue', photo: 'assets/images/doctor2.jpg' },
     { name: 'Dr. Leroy', specialty: 'Gynécologue', photo: 'assets/images/doctor3.jpg' },
   ];
-
+  popularSpecialties = [
+    { name: 'Cardiologie', icon: 'heart-outline' },
+    { name: 'Dermatologie', icon: 'body-outline' },
+    { name: 'Gynécologie', icon: 'female-outline' },
+    { name: 'Pédiatrie', icon: 'child-outline' },
+  ];
   toggleSettings() {
     this.showSettings = !this.showSettings;
   }
-
+  onSpecialtySelected(specialty: any) {
+    console.log('Spécialité sélectionnée :', specialty);
+    // Rediriger vers une page de recherche ou de détails
+  }
+  
+  // Fonction pour afficher les détails d'un médecin
+  viewDoctorDetails(doctor: any) {
+    console.log('Détails du médecin :', doctor);
+    // Rediriger vers une page de détails
+  }
   onSearch() {
     // Simuler des résultats de recherche
     this.searchResults = this.doctors
@@ -59,4 +73,5 @@ export class HomePage {
     console.log('Aller aux paramètres');
     // Rediriger vers la page des paramètres
   }
+  openNotifications(){}
 }

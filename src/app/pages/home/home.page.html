@@ -1,12 +1,19 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-button (click)="toggleSettings()">
-        <!-- Utiliser l'icône "menu-outline" pour les trois bandes -->
         <ion-icon [name]="showSettings ? 'close-outline' : 'menu-outline'"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Accueil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openNotifications()">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-title size="small">Prenez rendez-vous avec les meilleurs médecins</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -26,8 +33,8 @@
 
   <!-- Section de recherche -->
   <div class="search-container">
-    <ion-item>
-      <ion-label position="floating">Rechercher un médecin ou une spécialité</ion-label>
+    <ion-item class="search-bar">
+      <ion-icon name="search-outline" slot="start"></ion-icon>
       <ion-input
         type="text"
         [(ngModel)]="searchQuery"
@@ -35,56 +42,76 @@
         placeholder="Entrez le nom du médecin ou la spécialité..."
       ></ion-input>
     </ion-item>
-
-    <ion-button expand="full" (click)="onSearch()">Rechercher</ion-button>
+    <ion-button expand="full" color="primary" (click)="onSearch()">
+      <ion-icon name="search-outline" slot="start"></ion-icon>
+      Rechercher
+    </ion-button>
   </div>
 
-  <!-- Résultats de la recherche -->
-  <div *ngIf="searchResults.length > 0" class="search-results">
-    <ion-list>
-      <ion-item *ngFor="let result of searchResults" (click)="onDoctorSelected(result)">
-        {{ result }}
-      </ion-item>
-    </ion-list>
+  <!-- Section des spécialités populaires -->
+  <div class="specialties-section">
+    <h2>Spécialités populaires</h2>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" *ngFor="let specialty of popularSpecialties">
+          <ion-card (click)="onSpecialtySelected(specialty)">
+            <ion-card-header>
+              <ion-icon [name]="specialty.icon"></ion-icon>
+              <ion-card-title>{{ specialty.name }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
   <!-- Section des médecins disponibles -->
   <div class="doctors-section">
     <h2>Médecins disponibles</h2>
     <ion-list>
-      <ion-item *ngFor="let doctor of doctors" (click)="onDoctorSelected(doctor)">
+      <ion-item *ngFor="let doctor of doctors" class="doctor-card">
         <ion-avatar slot="start">
           <img [src]="doctor.photo" alt="{{ doctor.name }}">
         </ion-avatar>
         <ion-label>
           <h3>{{ doctor.name }}</h3>
           <p>{{ doctor.specialty }}</p>
+          <p>
+          
+            <ion-icon name="star" color="warning"></ion-icon>
+          
+          </p>
         </ion-label>
-        <ion-button fill="clear" (click)="bookAppointment(doctor)">Prendre RDV</ion-button>
+        <ion-button fill="clear" color="primary" (click)="bookAppointment(doctor)">
+          Prendre RDV
+        </ion-button>
+        <ion-button fill="clear" color="medium" (click)="viewDoctorDetails(doctor)">
+          Voir plus
+        </ion-button>
       </ion-item>
     </ion-list>
   </div>
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar>
+  <ion-toolbar color="light">
     <ion-grid>
       <ion-row>
         <ion-col size="4">
-          <ion-button expand="block" fill="clear" (click)="goToProfile()">
-            <ion-icon name="person-outline"></ion-icon>
+          <ion-button expand="block" fill="clear" color="medium" (click)="goToProfile()">
+            <ion-icon name="person-outline" size="large"></ion-icon>
             <ion-label>Profil</ion-label>
           </ion-button>
         </ion-col>
         <ion-col size="4">
-          <ion-button expand="block" fill="clear" (click)="goToAppointments()">
-            <ion-icon name="calendar-outline"></ion-icon>
+          <ion-button expand="block" fill="clear" color="medium" (click)="goToAppointments()">
+            <ion-icon name="calendar-outline" size="large"></ion-icon>
             <ion-label>Rendez-vous</ion-label>
           </ion-button>
         </ion-col>
         <ion-col size="4">
-          <ion-button expand="block" fill="clear" (click)="goToSettings()">
-            <ion-icon name="settings-outline"></ion-icon>
+          <ion-button expand="block" fill="clear" color="medium" (click)="goToSettings()">
+            <ion-icon name="settings-outline" size="large"></ion-icon>
             <ion-label>Paramètres</ion-label>
           </ion-button>
         </ion-col>
