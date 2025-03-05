@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -13,6 +15,7 @@ import { IonicModule } from '@ionic/angular';
   ]
 })
 export class HomePage {
+  constructor(private router: Router) {}
   showSettings = false;
   darkMode = false;
   notificationsEnabled = true;
@@ -61,7 +64,9 @@ export class HomePage {
 
   goToProfile() {
     console.log('Aller au profil');
-    // Rediriger vers la page de profil
+    if (this.router) {
+      this.router.navigate(['/profile']);
+    }
   }
 
   goToAppointments() {
@@ -72,6 +77,7 @@ export class HomePage {
   goToSettings() {
     console.log('Aller aux paramètres');
     // Rediriger vers la page des paramètres
-  }
-  openNotifications(){}
+}
+openNotifications()
+{}
 }

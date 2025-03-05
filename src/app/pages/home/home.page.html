@@ -82,7 +82,7 @@
           
           </p>
         </ion-label>
-        <ion-button fill="clear" color="primary" (click)="bookAppointment(doctor)">
+        <ion-button href="/inscription" fill="clear" color="primary" (click)="bookAppointment(doctor)">
           Prendre RDV
         </ion-button>
         <ion-button fill="clear" color="medium" (click)="viewDoctorDetails(doctor)">
@@ -100,7 +100,7 @@
         <ion-col size="4">
           <ion-button expand="block" fill="clear" color="medium" (click)="goToProfile()">
             <ion-icon name="person-outline" size="large"></ion-icon>
-            <ion-label>Profil</ion-label>
+            <ion-label (click)="goToProfile">Profil</ion-label>
           </ion-button>
         </ion-col>
         <ion-col size="4">
