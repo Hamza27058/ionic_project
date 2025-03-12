@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Patient List</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let patient of patients">
+      <ion-label>
+        <h2>{{ patient.nom }}</h2>
+        <p>Email: {{ patient.email }}</p>
+        <p>Telephone: {{ patient.telephone }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
