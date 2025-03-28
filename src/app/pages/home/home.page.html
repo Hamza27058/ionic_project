@@ -18,7 +18,6 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Section des paramètres (masquée par défaut) -->
   <div *ngIf="showSettings" class="settings-section">
     <h2>Paramètres</h2>
     <ion-item>
@@ -31,7 +30,6 @@
     </ion-item>
   </div>
 
-  <!-- Section de recherche -->
   <div class="search-container">
     <ion-item class="search-bar">
       <ion-icon name="search-outline" slot="start"></ion-icon>
@@ -48,7 +46,6 @@
     </ion-button>
   </div>
 
-  <!-- Section des spécialités populaires -->
   <div class="specialties-section">
     <h2>Spécialités populaires</h2>
     <ion-grid>
@@ -65,7 +62,6 @@
     </ion-grid>
   </div>
 
-  <!-- Section des médecins disponibles -->
   <div class="doctors-section">
     <h2>Médecins disponibles</h2>
     <ion-list>
@@ -77,12 +73,10 @@
           <h3>{{ doctor.name }}</h3>
           <p>{{ doctor.specialty }}</p>
           <p>
-          
             <ion-icon name="star" color="warning"></ion-icon>
-          
           </p>
         </ion-label>
-        <ion-button href="/inscription" fill="clear" color="primary" (click)="bookAppointment(doctor)">
+        <ion-button fill="clear" color="primary" (click)="bookAppointment(doctor)">
           Prendre RDV
         </ion-button>
         <ion-button fill="clear" color="medium" (click)="viewDoctorDetails(doctor)">
@@ -100,7 +94,7 @@
         <ion-col size="4">
           <ion-button expand="block" fill="clear" color="medium" (click)="goToProfile()">
             <ion-icon name="person-outline" size="large"></ion-icon>
-            <ion-label (click)="goToProfile">Profil</ion-label>
+            <ion-label>Profil</ion-label>
           </ion-button>
         </ion-col>
         <ion-col size="4">

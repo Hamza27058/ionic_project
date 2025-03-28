@@ -1,37 +1,55 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Modifier le Profil
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Mon Profil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div id="container">
-    <strong>Modifier votre profil</strong>
-    <form (ngSubmit)="onSubmit()">
+<ion-content class="ion-padding">
+  <!-- Loader -->
+  <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <div *ngIf="profile && !isEditing && !isLoading" class="profile-section">
+    <ion-card class="profile-card">
+      <ion-card-header>
+        <ion-card-title>{{ profile.name }} {{ profile.surname }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        <p><strong>Créé le:</strong> {{ profile.created_at }}</p>
+        <p *ngIf="profile.updated_at"><strong>Mis à jour le:</strong> {{ profile.updated_at }}</p>
+      </ion-card-content>
+    </ion-card>
+    <ion-button expand="block" color="primary" (click)="toggleEdit()">Modifier le profil</ion-button>
+    <ion-button expand="block" color="danger" (click)="logout()">Se déconnecter</ion-button>
+  </div>
+
+  <div *ngIf="isEditing && !isLoading" class="edit-section">
+    <h2>Modifier le profil</h2>
+    <form (ngSubmit)="updateProfile()">
       <ion-item>
         <ion-label position="floating">Nom</ion-label>
-        <ion-input [(ngModel)]="profile.name" name="name" type="text" required></ion-input>
+        <ion-input [(ngModel)]="name" name="name" required></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Prénom</ion-label>
-        <ion-input [(ngModel)]="profile.surname" name="surname" type="text" required></ion-input>
+        <ion-input [(ngModel)]="surname" name="surname" required></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Email</ion-label>
-        <ion-input [(ngModel)]="profile.email" name="email" type="email" required></ion-input>
+        <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label position="floating">Mot de passe</ion-label>
-        <ion-input [(ngModel)]="profile.password" name="password" type="password" required></ion-input>
+        <ion-label position="floating">Nouveau mot de passe (facultatif)</ion-label>
+        <ion-input [(ngModel)]="password" name="password" type="password"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Confirmer le mot de passe</ion-label>
-        <ion-input [(ngModel)]="profile.confirmPassword" name="confirmPassword" type="password" required></ion-input>
+        <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password"></ion-input>
       </ion-item>
-      <ion-button expand="full" type="submit">Enregistrer</ion-button>
+      <ion-button expand="block" type="submit" color="primary">Enregistrer</ion-button>
+      <ion-button expand="block" fill="clear" (click)="toggleEdit()">Annuler</ion-button>
     </form>
   </div>
-</ion-content>
 
+  <ion-button expand="block" color="medium" (click)="goBack()">Retour</ion-button>
+</ion-content>

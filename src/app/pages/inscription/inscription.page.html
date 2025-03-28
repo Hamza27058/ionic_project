@@ -1,40 +1,32 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Inscription
-    </ion-title>
+    <ion-title>Inscription</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div id="container">
-    <strong>Inscription Page</strong>
-    <p>Fill in your details to sign up.</p>
-    <!-- Add your form here -->
-    <form>
-      <ion-item>
-        <ion-label position="floating">Name</ion-label>
-        <ion-input type="text"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Surname</ion-label>
-        <ion-input type="text"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Password</ion-label>
-        <ion-input type="password"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Confirm Password</ion-label>
-        <ion-input type="password"></ion-input>
-      </ion-item>
-      <ion-button expand="full" type="submit">Sign Up</ion-button>
-    </form>
-    <p>Already have an account? <a href="/login">Login here</a></p>
-  </div>
+<ion-content class="ion-padding">
+  <form (ngSubmit)="onSubmit($event)">
+    <ion-item>
+      <ion-label position="floating">Nom</ion-label>
+      <ion-input [(ngModel)]="name" name="name" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Prénom</ion-label>
+      <ion-input [(ngModel)]="surname" name="surname" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Mot de passe</ion-label>
+      <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Confirmer le mot de passe</ion-label>
+      <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required></ion-input>
+    </ion-item>
+    <ion-button expand="block" type="submit">S'inscrire</ion-button>
+  </form>
+  <ion-button expand="block" fill="clear" (click)="goToLogin()">Déjà un compte ? Se connecter</ion-button>
 </ion-content>
-

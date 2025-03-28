@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Mes Rendez-vous</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Loader -->
+  <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <div *ngIf="appointments.length > 0 && !isLoading; else noAppointments">
+    <ion-list>
+      <ion-item *ngFor="let appointment of appointments" class="appointment-card">
+        <ion-label>
+          <h2>{{ appointment.doctorName }}</h2>
+          <p><strong>Date:</strong> {{ appointment.date }}</p>
+          <p><strong>Créé le:</strong> {{ appointment.created_at }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <ng-template #noAppointments>
+    <p *ngIf="!isLoading">Aucun rendez-vous trouvé.</p>
+  </ng-template>
+
+  <ion-button expand="block" color="medium" (click)="goBack()">Retour</ion-button>
+</ion-content>
