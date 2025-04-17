@@ -1,32 +1,62 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Inscription</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form (ngSubmit)="onSubmit($event)">
+  <!-- Spinner de chargement -->
+  <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <!-- Message d'erreur -->
+  <ion-item *ngIf="errorMessage" lines="none" color="danger">
+    <ion-label>{{ errorMessage }}</ion-label>
+  </ion-item>
+
+  <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()">
     <ion-item>
       <ion-label position="floating">Nom</ion-label>
-      <ion-input [(ngModel)]="name" name="name" required></ion-input>
+      <ion-input formControlName="name" required></ion-input>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('name')?.touched && inscriptionForm.get('name')?.hasError('required')">
+        Le nom est requis.
+      </ion-text>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Prénom</ion-label>
-      <ion-input [(ngModel)]="surname" name="surname" required></ion-input>
+      <ion-input formControlName="surname" required></ion-input>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('surname')?.touched && inscriptionForm.get('surname')?.hasError('required')">
+        Le prénom est requis.
+      </ion-text>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+      <ion-input formControlName="email" type="email" required></ion-input>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('email')?.touched && inscriptionForm.get('email')?.hasError('required')">
+        L'email est requis.
+      </ion-text>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('email')?.touched && inscriptionForm.get('email')?.hasError('email')">
+        L'email doit être valide.
+      </ion-text>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Mot de passe</ion-label>
-      <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
+26
+      <ion-input formControlName="password" type="password" required></ion-input>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('password')?.touched && inscriptionForm.get('password')?.hasError('required')">
+        Le mot de passe est requis.
+      </ion-text>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('password')?.touched && inscriptionForm.get('password')?.hasError('minlength')">
+        Le mot de passe doit contenir au moins 8 caractères.
+      </ion-text>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Confirmer le mot de passe</ion-label>
-      <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required></ion-input>
+      <ion-input formControlName="confirmPassword" type="password" required></ion-input>
+      <ion-text color="danger" *ngIf="inscriptionForm.get('confirmPassword')?.touched && inscriptionForm.hasError('mismatch')">
+        Les mots de passe ne correspondent pas.
+      </ion-text>
     </ion-item>
-    <ion-button expand="block" type="submit">S'inscrire</ion-button>
+    <ion-button expand="block" type="submit" [disabled]="!inscriptionForm.valid || isLoading">S'inscrire</ion-button>
   </form>
   <ion-button expand="block" fill="clear" (click)="goToLogin()">Déjà un compte ? Se connecter</ion-button>
 </ion-content>

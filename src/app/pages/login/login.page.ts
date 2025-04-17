@@ -1,45 +1,59 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common'; // Ajout de CommonModule
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, HttpClientModule]
+  imports: [IonicModule, FormsModule, ReactiveFormsModule, HttpClientModule, CommonModule], // Ajout de CommonModule
 })
 export class LoginPage {
-  email: string = '';
-  password: string = '';
+  loginForm: FormGroup;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private apiService: ApiService,
+    private toastController: ToastController
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+    });
+  }
 
-  async onSubmit(event: Event) {
-    event.preventDefault();
+  async onSubmit() {
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      const payload = this.loginForm.value;
 
-    const payload = {
-      email: this.email,
-      password: this.password
-    };
-
-    console.log('Données envoyées:', payload);
-
-    try {
-      const response: any = await this.http.post('http://localhost:5000/api/login', payload).toPromise();
-      console.log('Réponse connexion:', response);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('userId', response.user_id);
-      this.router.navigate(['/home']);
-    } catch (error: any) {
-      console.error('Erreur complète:', error);
-      console.log('Réponse du serveur:', error.error);
-      if (error.status === 0) {
-        alert('Impossible de se connecter au serveur. Vérifiez si le backend est en marche.');
-      } else {
-        alert(`Erreur: ${error.error?.error || 'Inconnue'} - Détails: ${error.error?.details || 'Aucun détail'}`);
+      try {
+        const response: any = await this.apiService.login(payload).toPromise();
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('userId', response.user_id);
+        const toast = await this.toastController.create({
+          message: 'Connexion réussie !',
+          duration: 2000,
+          color: 'success',
+        });
+        await toast.present();
+        this.router.navigate(['/home']);
+      } catch (error: any) {
+        this.errorMessage = error.error?.error || 'Erreur lors de la connexion.';
+        if (error.status === 0) {
+          this.errorMessage = 'Impossible de se connecter au serveur. Vérifiez si le backend est en marche.';
+        }
+      } finally {
+        this.isLoading = false;
       }
     }
   }

@@ -1,117 +1,138 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [
-    IonicModule,
-    FormsModule,
-    HttpClientModule,
-    CommonModule
-  ]
+  imports: [IonicModule, FormsModule, ReactiveFormsModule, HttpClientModule, CommonModule],
 })
 export class ProfilePage implements OnInit {
   profile: any = null;
   isEditing = false;
   isLoading = false;
-  name: string = '';
-  surname: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+  editForm: FormGroup;
+  errorMessage = '';
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private apiService: ApiService,
+    private fb: FormBuilder,
+    private toastController: ToastController
+  ) {
+    this.editForm = this.fb.group({
+      name: ['', Validators.required],
+      surname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.minLength(8)]],
+      confirmPassword: [''],
+    }, { validator: this.passwordMatchValidator });
+  }
 
   ngOnInit() {
     this.loadProfile();
   }
 
-  loadProfile() {
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    return password && confirmPassword && password === confirmPassword
+      ? null
+      : { mismatch: true };
+  }
+
+  async loadProfile() {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
 
     if (!token || !userId) {
-      this.router.navigate(['/inscription']);
+      const toast = await this.toastController.create({
+        message: 'Veuillez vous connecter pour voir votre profil.',
+        duration: 2000,
+        color: 'warning',
+      });
+      await toast.present();
+      this.router.navigate(['/login']);
       return;
     }
 
     this.isLoading = true;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get('http://localhost:5000/api/profile', { headers }).subscribe(
-      (response: any) => {
-        this.profile = response;
-        this.name = response.name;
-        this.surname = response.surname;
-        this.email = response.email;
-        this.isLoading = false;
-      },
-      error => {
-        console.error('Erreur lors du chargement du profil:', error);
-        this.isLoading = false;
-        if (error.status === 401) {
-          alert('Session expirée ou invalide. Veuillez vous reconnecter.');
-          this.logout();
-        } else {
-          alert(`Erreur: ${error.error?.error || 'Inconnue'}`);
-        }
+    this.errorMessage = '';
+    try {
+      const response: any = await this.apiService.getProfile().toPromise();
+      this.profile = response;
+      this.editForm.patchValue({
+        name: response.name,
+        surname: response.surname,
+        email: response.email,
+      });
+    } catch (error: any) {
+      this.errorMessage = error.error?.error || 'Erreur lors du chargement du profil.';
+      if (error.status === 401) {
+        this.errorMessage = 'Session expirée. Veuillez vous reconnecter.';
+        this.logout();
       }
-    );
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   toggleEdit() {
     this.isEditing = !this.isEditing;
     if (!this.isEditing) {
-      this.password = '';
-      this.confirmPassword = '';
+      this.editForm.patchValue({
+        password: '',
+        confirmPassword: '',
+      });
+      this.errorMessage = '';
     }
   }
 
-  updateProfile() {
-    if (this.password && this.password !== this.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
-      return;
-    }
+  async updateProfile() {
+    if (this.editForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      const payload = this.editForm.value;
+      if (!payload.password) {
+        delete payload.password;
+        delete payload.confirmPassword;
+      } else {
+        delete payload.confirmPassword;
+      }
 
-    const payload = {
-      name: this.name,
-      surname: this.surname,
-      email: this.email,
-      password: this.password || undefined,
-      confirmPassword: this.confirmPassword || undefined
-    };
-
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.isLoading = true;
-    this.http.put('http://localhost:5000/api/profile', payload, { headers }).subscribe(
-      (response: any) => {
-        alert('Profil mis à jour avec succès');
+      try {
+        await this.apiService.updateProfile(payload).toPromise();
+        const toast = await this.toastController.create({
+          message: 'Profil mis à jour avec succès.',
+          duration: 2000,
+          color: 'success',
+        });
+        await toast.present();
         this.isEditing = false;
         this.loadProfile();
+      } catch (error: any) {
+        this.errorMessage = error.error?.error || 'Erreur lors de la mise à jour du profil.';
+      } finally {
         this.isLoading = false;
-      },
-      error => {
-        console.error('Erreur lors de la mise à jour:', error);
-        this.isLoading = false;
-        alert(`Erreur: ${error.error?.error || 'Inconnue'}`);
       }
-    );
+    }
   }
 
-  logout() {
+  async logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    this.router.navigate(['/home']);
-  }
-
-  goBack() {
+    const toast = await this.toastController.create({
+      message: 'Déconnexion réussie.',
+      duration: 2000,
+      color: 'success',
+    });
+    await toast.present();
     this.router.navigate(['/home']);
   }
 }

@@ -1,28 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    HttpClientModule
-  ]
+  imports: [CommonModule, FormsModule, IonicModule, HttpClientModule],
 })
 export class HomePage implements OnInit {
-  showSettings = false;
-  darkMode = false;
-  notificationsEnabled = true;
   searchQuery = '';
-  searchResults: any[] = [];
+  locationFilter = '';
   doctors: any[] = [];
   popularSpecialties = [
     { name: 'Cardiologie', icon: 'heart-outline' },
@@ -30,65 +23,70 @@ export class HomePage implements OnInit {
     { name: 'Gynécologie', icon: 'female-outline' },
     { name: 'Pédiatrie', icon: 'child-outline' },
   ];
+  page = 1;
+  perPage = 10;
+  isLoading = false;
+  totalDoctors = 0;
 
-  constructor(private router: Router, private http: HttpClient) {
-    this.loadDoctors(); // Charger tous les médecins au démarrage
+  constructor(
+    private router: Router,
+    private apiService: ApiService,
+    private toastController: ToastController
+  ) {}
+
+  ngOnInit() {
+    this.loadDoctors();
   }
 
-  ngOnInit() {}
-
-  loadDoctors() {
-    this.http.get('http://localhost:5000/api/doctors').subscribe(
-      (response: any) => {
-        this.doctors = response;
-      },
-      error => {
-        console.error('Erreur lors du chargement des médecins:', error);
-      }
-    );
-  }
-
-  toggleSettings() {
-    this.showSettings = !this.showSettings;
-  }
-
-  onSpecialtySelected(specialty: any) {
-    this.http.get(`http://localhost:5000/api/doctors/${specialty.name}`).subscribe(
-      (response: any) => {
-        this.doctors = response; // Met à jour la liste des médecins selon la spécialité
-      },
-      error => {
-        console.error('Erreur lors de la recherche par spécialité:', error);
-        this.doctors = []; // Affiche une liste vide si erreur
-      }
-    );
-  }
-
-  viewDoctorDetails(doctor: any) {
-    this.router.navigate(['/doctor-details'], { state: { doctor } });
-  }
-
-  onSearch() {
-    if (this.searchQuery.trim()) {
-      this.http.get('http://localhost:5000/api/doctors').subscribe(
-        (response: any) => {
-          this.searchResults = response.filter((doctor: any) =>
-            doctor.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            doctor.specialty.toLowerCase().includes(this.searchQuery.toLowerCase())
-          );
-          this.doctors = this.searchResults;
-        },
-        error => {
-          console.error('Erreur lors de la recherche:', error);
+  async loadDoctors(event?: any) {
+    this.isLoading = true;
+    try {
+      const response = await this.apiService.getDoctors(this.page, this.perPage, this.searchQuery, this.locationFilter).toPromise();
+      this.doctors = event ? [...this.doctors, ...response.data] : response.data;
+      this.totalDoctors = response.total;
+      if (event) {
+        event.target.complete();
+        if (this.doctors.length >= this.totalDoctors) {
+          event.target.disabled = true;
         }
-      );
+      }
+    } catch (error) {
+      const toast = await this.toastController.create({
+        message: 'Erreur lors du chargement des médecins',
+        duration: 2000,
+        color: 'danger',
+      });
+      await toast.present();
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  bookAppointment(doctor: any) {
+  loadMoreDoctors(event: any) {
+    this.page++;
+    this.loadDoctors(event);
+  }
+
+  onSearch() {
+    this.page = 1;
+    this.doctors = [];
+    this.loadDoctors();
+  }
+
+  onSpecialtySelected(specialty: any) {
+    this.searchQuery = specialty.name;
+    this.onSearch();
+  }
+
+  async bookAppointment(doctor: any) {
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      alert('Vous devez être connecté pour prendre un rendez-vous.');
+      const toast = await this.toastController.create({
+        message: 'Vous devez être connecté pour prendre un rendez-vous.',
+        duration: 2000,
+        color: 'warning',
+      });
+      await toast.present();
       this.router.navigate(['/inscription']);
       return;
     }
@@ -96,49 +94,30 @@ export class HomePage implements OnInit {
     const appointmentData = {
       doctor_id: doctor._id,
       user_id: userId,
-      date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+      date: new Date().toISOString().slice(0, 16).replace('T', ' '),
     };
 
-    this.http.post('http://localhost:5000/api/appointments', appointmentData).subscribe(
-      (response: any) => {
-        alert('Rendez-vous pris avec succès!');
-        this.goToAppointments();
-      },
-      error => {
-        console.error('Erreur lors de la prise de rendez-vous:', error);
-        alert('Erreur lors de la prise de rendez-vous');
-      }
-    );
-  }
-
-  goToProfile() {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
-
-    if (token && userId) {
-      console.log('Utilisateur connecté, redirection vers /profile');
-      this.router.navigate(['/profile']);
-    } else {
-      console.log('Aucun utilisateur connecté, redirection vers /inscription');
-      this.router.navigate(['/inscription']);
-    }
-  }
-
-  goToAppointments() {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
-
-    if (token && userId) {
-      console.log('Utilisateur connecté, redirection vers /appointments');
+    try {
+      await this.apiService.bookAppointment(appointmentData).toPromise();
+      const toast = await this.toastController.create({
+        message: 'Rendez-vous pris avec succès !',
+        duration: 2000,
+        color: 'success',
+      });
+      await toast.present();
       this.router.navigate(['/appointments']);
-    } else {
-      console.log('Aucun utilisateur connecté, redirection vers /inscription');
-      this.router.navigate(['/inscription']);
+    } catch (error) {
+      const toast = await this.toastController.create({
+        message: 'Erreur lors de la prise de rendez-vous',
+        duration: 2000,
+        color: 'danger',
+      });
+      await toast.present();
     }
   }
 
-  goToSettings() {
-    this.router.navigate(['/settings']);
+  viewDoctorDetails(doctor: any) {
+    this.router.navigate(['/doctor-details'], { state: { doctor } });
   }
 
   openNotifications() {

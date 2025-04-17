@@ -5,8 +5,13 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Loader -->
+  <!-- Spinner de chargement -->
   <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <!-- Message d'erreur -->
+  <ion-item *ngIf="errorMessage" lines="none" color="danger">
+    <ion-label>{{ errorMessage }}</ion-label>
+  </ion-item>
 
   <div *ngIf="profile && !isEditing && !isLoading" class="profile-section">
     <ion-card class="profile-card">
@@ -15,8 +20,8 @@
       </ion-card-header>
       <ion-card-content>
         <p><strong>Email:</strong> {{ profile.email }}</p>
-        <p><strong>Créé le:</strong> {{ profile.created_at }}</p>
-        <p *ngIf="profile.updated_at"><strong>Mis à jour le:</strong> {{ profile.updated_at }}</p>
+        <p><strong>Créé le:</strong> {{ profile.created_at | date:'medium' }}</p>
+        <p *ngIf="profile.updated_at"><strong>Mis à jour le:</strong> {{ profile.updated_at | date:'medium' }}</p>
       </ion-card-content>
     </ion-card>
     <ion-button expand="block" color="primary" (click)="toggleEdit()">Modifier le profil</ion-button>
@@ -25,31 +30,47 @@
 
   <div *ngIf="isEditing && !isLoading" class="edit-section">
     <h2>Modifier le profil</h2>
-    <form (ngSubmit)="updateProfile()">
+    <form [formGroup]="editForm" (ngSubmit)="updateProfile()">
       <ion-item>
         <ion-label position="floating">Nom</ion-label>
-        <ion-input [(ngModel)]="name" name="name" required></ion-input>
+        <ion-input formControlName="name" required></ion-input>
+        <ion-text color="danger" *ngIf="editForm.get('name')?.touched && editForm.get('name')?.hasError('required')">
+          Le nom est requis.
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Prénom</ion-label>
-        <ion-input [(ngModel)]="surname" name="surname" required></ion-input>
+        <ion-input formControlName="surname" required></ion-input>
+        <ion-text color="danger" *ngIf="editForm.get('surname')?.touched && editForm.get('surname')?.hasError('required')">
+          Le prénom est requis.
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Email</ion-label>
-        <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+        <ion-input formControlName="email" type="email" required></ion-input>
+        <ion-text color="danger" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.hasError('required')">
+          L'email est requis.
+        </ion-text>
+        <ion-text color="danger" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.hasError('email')">
+          L'email doit être valide.
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Nouveau mot de passe (facultatif)</ion-label>
-        <ion-input [(ngModel)]="password" name="password" type="password"></ion-input>
+        <ion-input formControlName="password" type="password"></ion-input>
+        <ion-text color="danger" *ngIf="editForm.get('password')?.touched && editForm.get('password')?.hasError('minlength')">
+          Le mot de passe doit contenir au moins 8 caractères.
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Confirmer le mot de passe</ion-label>
-        <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password"></ion-input>
+        <ion-input formControlName="confirmPassword" type="password"></ion-input>
+        <ion-text color="danger" *ngIf="editForm.get('confirmPassword')?.touched && editForm.hasError('mismatch')">
+          Les mots de passe ne correspondent pas.
+        </ion-text>
       </ion-item>
-      <ion-button expand="block" type="submit" color="primary">Enregistrer</ion-button>
+      <ion-button expand="block" type="submit" color="primary" [disabled]="!editForm.valid || isLoading">Enregistrer</ion-button>
       <ion-button expand="block" fill="clear" (click)="toggleEdit()">Annuler</ion-button>
     </form>
   </div>
-
-  <ion-button expand="block" color="medium" (click)="goBack()">Retour</ion-button>
 </ion-content>

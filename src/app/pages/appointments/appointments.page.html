@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Loader -->
+  <!-- Spinner de chargement -->
   <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
 
   <div *ngIf="appointments.length > 0 && !isLoading; else noAppointments">
@@ -13,16 +13,21 @@
       <ion-item *ngFor="let appointment of appointments" class="appointment-card">
         <ion-label>
           <h2>{{ appointment.doctorName }}</h2>
-          <p><strong>Date:</strong> {{ appointment.date }}</p>
-          <p><strong>Créé le:</strong> {{ appointment.created_at }}</p>
+          <p><strong>Date:</strong> {{ appointment.date | date:'medium' }}</p>
+          <p><strong>Créé le:</strong> {{ appointment.created_at | date:'medium' }}</p>
+          <p><strong>Statut:</strong> {{ appointment.status || 'Confirmé' }}</p>
         </ion-label>
+        <ion-button fill="clear" color="danger" (click)="cancelAppointment(appointment)" [disabled]="appointment.status === 'Annulé'">
+          Annuler
+        </ion-button>
       </ion-item>
     </ion-list>
+    <ion-infinite-scroll (ionInfinite)="loadMoreAppointments($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
 
   <ng-template #noAppointments>
     <p *ngIf="!isLoading">Aucun rendez-vous trouvé.</p>
   </ng-template>
-
-  <ion-button expand="block" color="medium" (click)="goBack()">Retour</ion-button>
 </ion-content>

@@ -1,14 +1,26 @@
-#container {
-    text-align: center;
-    padding: 20px;
-  }
-  ion-item {
-    margin-bottom: 15px;
-  }
-  ion-button {
-    margin-top: 20px;
-  }
-  a {
-    color: var(--ion-color-primary);
-    text-decoration: none;
-  }
+ion-content {
+  --background: var(--ion-background-color, #f5f7fa);
+}
+
+.loading-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+ion-item {
+  --background: var(--ion-item-background, #ffffff);
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+ion-button {
+  --border-radius: 8px;
+  margin-top: 20px;
+}
+
+ion-text[color="danger"] {
+  font-size: 0.8rem;
+  padding-left: 16px;
+  display: block;
+}

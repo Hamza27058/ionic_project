@@ -1,5 +1,5 @@
 ion-content {
-  --background: #f5f7fa;
+  --background: var(--ion-background-color, #f5f7fa);
 }
 
 .loading-spinner {
@@ -9,16 +9,16 @@ ion-content {
 
 .profile-section {
   .profile-card {
-    --background: #ffffff;
+    --background: var(--ion-item-background, #ffffff);
     --border-radius: 10px;
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     ion-card-title {
-      color: #333;
+      color: var(--ion-text-color, #333);
       font-size: 1.5rem;
     }
     ion-card-content {
       p {
-        color: #666;
+        color: var(--ion-text-color, #666);
         font-size: 1rem;
         margin: 5px 0;
       }
@@ -32,12 +32,12 @@ ion-content {
 
 .edit-section {
   h2 {
-    color: #333;
+    color: var(--ion-text-color, #333);
     font-size: 1.5rem;
     margin-bottom: 15px;
   }
   ion-item {
-    --background: #ffffff;
+    --background: var(--ion-item-background, #ffffff);
     --border-radius: 8px;
     --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
@@ -45,5 +45,10 @@ ion-content {
   ion-button {
     --border-radius: 8px;
     margin-top: 10px;
+  }
+  ion-text[color="danger"] {
+    font-size: 0.8rem;
+    padding-left: 16px;
+    display: block;
   }
 }
