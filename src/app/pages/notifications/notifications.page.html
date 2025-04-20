@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Notifications</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" id="main-content">
+  @if (isLoading) {
+    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+  }
+
+  @if (!isLoading) {
+    @if (errorMessage) {
+      <ion-text color="danger">{{ errorMessage }}</ion-text>
+    }
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Vos notifications</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          @for (notification of notifications; track notification.id) {
+            <ion-item>
+              <ion-label>
+                <h3>{{ notification.message }}</h3>
+                <p>{{ notification.created_at | date:'short' }}</p>
+              </ion-label>
+            </ion-item>
+          }
+          @if (!notifications.length) {
+            <ion-item>
+              <ion-label>Aucune notification trouvée</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

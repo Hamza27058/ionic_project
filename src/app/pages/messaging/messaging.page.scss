@@ -1,0 +1,18 @@
+ion-card {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .message-sent {
+    --background: var(--ion-color-primary-tint);
+    text-align: right;
+  }
+  
+  .message-received {
+    --background: var(--ion-color-light);
+  }
+  
+  .timestamp {
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+  }

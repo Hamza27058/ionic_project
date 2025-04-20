@@ -1,0 +1,30 @@
+ion-card {
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+ion-item {
+  --border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+ion-avatar img {
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+}
+
+ion-button {
+  margin-top: 10px;
+}
+
+.loading-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+}

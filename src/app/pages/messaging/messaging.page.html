@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Messages</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" id="main-content">
+  <ion-item>
+    <ion-label>Contact</ion-label>
+    <ion-select [(ngModel)]="selectedContact" (ionChange)="onContactChange()">
+      @for (contact of contacts; track contact._id) {
+        <ion-select-option [value]="contact._id">
+          {{ contact.name }} {{ contact.surname }}
+        </ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-list>
+        @for (message of messages; track message._id) {
+          <ion-item [class]="message.sender_id === userId ? 'message-sent' : 'message-received'">
+            <ion-label>
+              <p>{{ message.content }}</p>
+              <p class="timestamp">{{ message.created_at | date:'short' }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-item>
+    <ion-input
+      type="text"
+      [(ngModel)]="newMessage"
+      placeholder="Écrire un message..."
+      (keyup.enter)="sendMessage()"
+    ></ion-input>
+    <ion-button slot="end" (click)="sendMessage()">Envoyer</ion-button>
+  </ion-item>
+</ion-content>
