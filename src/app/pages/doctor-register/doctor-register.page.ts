@@ -13,13 +13,15 @@ import { Router } from '@angular/router';
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule],
 })
 export class DoctorRegisterPage {
-  name: string = '';
-  surname: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  specialty: string = '';
-  city: string = '';
+  doctor = {
+    name: '',
+    surname: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    specialty: '',
+    city: '',
+  };
   private apiUrl = 'http://localhost:5000/api';
 
   constructor(
@@ -29,7 +31,15 @@ export class DoctorRegisterPage {
   ) {}
 
   async register() {
-    if (!this.name || !this.surname || !this.email || !this.password || !this.confirmPassword || !this.specialty || !this.city) {
+    if (
+      !this.doctor.name ||
+      !this.doctor.surname ||
+      !this.doctor.email ||
+      !this.doctor.password ||
+      !this.doctor.confirmPassword ||
+      !this.doctor.specialty ||
+      !this.doctor.city
+    ) {
       const alert = await this.alertController.create({
         header: 'Erreur',
         message: 'Tous les champs sont requis.',
@@ -39,7 +49,7 @@ export class DoctorRegisterPage {
       return;
     }
 
-    if (this.password !== this.confirmPassword) {
+    if (this.doctor.password !== this.doctor.confirmPassword) {
       const alert = await this.alertController.create({
         header: 'Erreur',
         message: 'Les mots de passe ne correspondent pas.',
@@ -50,13 +60,13 @@ export class DoctorRegisterPage {
     }
 
     const registerData = {
-      name: this.name,
-      surname: this.surname,
-      email: this.email,
-      password: this.password,
-      specialty: this.specialty,
-      city: this.city,
-      role: 'doctor'
+      name: this.doctor.name,
+      surname: this.doctor.surname,
+      email: this.doctor.email,
+      password: this.doctor.password,
+      specialty: this.doctor.specialty,
+      city: this.doctor.city,
+      role: 'doctor',
     };
 
     this.http.post(`${this.apiUrl}/doctor-register`, registerData).subscribe({
@@ -66,12 +76,14 @@ export class DoctorRegisterPage {
         const successAlert = await this.alertController.create({
           header: 'Succès',
           message: 'Inscription réussie !',
-          buttons: [{
-            text: 'OK',
-            handler: () => {
-              this.router.navigate(['/doctor-dashboard']);
-            }
-          }],
+          buttons: [
+            {
+              text: 'OK',
+              handler: () => {
+                this.router.navigate(['/doctor-dashboard']);
+              },
+            },
+          ],
         });
         await successAlert.present();
       },
@@ -83,6 +95,6 @@ export class DoctorRegisterPage {
         });
         await alert.present();
       },
-    });
-  }
+    });
+  }
 }
