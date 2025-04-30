@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule, AlertController, ModalController } from '@ionic/angular';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { IonicModule, AlertController, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
@@ -13,6 +13,18 @@ interface UserProfile {
   specialty: string;
   city: string;
   photo: string;
+}
+
+interface Appointment {
+  _id: string;
+  doctor_id: string;
+  user_id: string;
+  date: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  user_name: string;
+  doctor_name: string;
 }
 
 interface Message {
@@ -31,35 +43,36 @@ interface Message {
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule],
 })
 export class DoctorDashboardPage implements OnInit {
-  profile: UserProfile = {
-    _id: '',
-    name: '',
-    surname: '',
-    email: '',
-    specialty: '',
-    city: '',
-    photo: ''
-  };
-  password: string = '';
-  confirmPassword: string = '';
-  messages: Message[] = [];
+  profile: any = {};
+  appointments: any[] = [];
   contacts: any[] = [];
+  messages: any[] = [];
   selectedContact: any = null;
   newMessage: string = '';
-  isLoading = false;
+  isLoading = true;
   errorMessage = '';
+  password = '';
+  confirmPassword = '';
+  selectedTab = 'appointments'; // Onglet par défaut
+  pendingAppointmentsCount = 0;
+  acceptedAppointmentsCount = 0;
+  notificationCount = 0;
+  pendingAppointments: any[] = [];
+  acceptedAppointments: any[] = [];
   private apiUrl = 'http://localhost:5000/api';
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private alertController: AlertController,
-    private modalController: ModalController
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
     this.loadProfile();
+    this.loadAppointments();
     this.loadContacts();
+    this.loadNotifications();
   }
 
   loadProfile() {
@@ -71,7 +84,7 @@ export class DoctorDashboardPage implements OnInit {
       return;
     }
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.get<UserProfile>(`${this.apiUrl}/profile`, { headers }).subscribe({
+    this.http.get(`${this.apiUrl}/profile`, { headers }).subscribe({
       next: (response) => {
         this.profile = response;
         this.isLoading = false;
@@ -239,6 +252,116 @@ export class DoctorDashboardPage implements OnInit {
     });
   }
 
+  loadAppointments() {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    if (!token || !userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<Appointment[]>(`${this.apiUrl}/doctor-appointments/${userId}`, { headers }).subscribe({
+      next: (response) => {
+        this.appointments = response;
+        this.pendingAppointments = this.appointments.filter(appointment => appointment.status === 'pending');
+        this.acceptedAppointments = this.appointments.filter(appointment => appointment.status === 'accepted');
+        this.pendingAppointmentsCount = this.pendingAppointments.length;
+        this.acceptedAppointmentsCount = this.acceptedAppointments.length;
+      },
+      error: async (err) => {
+        console.error('Error loading appointments:', err);
+        const alert = await this.alertController.create({
+          header: 'Erreur',
+          message: 'Impossible de charger les rendez-vous.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      },
+    });
+  }
+
+  segmentChanged(event: any) {
+    this.selectedTab = event.detail.value;
+  }
+
+  acceptAppointment(appointmentId: string) {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    if (!token || !userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    const updateData = { status: 'accepted' };
+    this.http.put(`${this.apiUrl}/appointments/${appointmentId}`, updateData, { headers }).subscribe({
+      next: async () => {
+        const alert = await this.alertController.create({
+          header: 'Succès',
+          message: 'Rendez-vous accepté avec succès !',
+          buttons: ['OK'],
+        });
+        await alert.present();
+        this.loadAppointments();
+      },
+      error: async (err) => {
+        const alert = await this.alertController.create({
+          header: 'Erreur',
+          message: 'Erreur lors de l\'acceptation du rendez-vous.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      },
+    });
+  }
+
+  rejectAppointment(appointmentId: string) {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    if (!token || !userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    const updateData = { status: 'rejected' };
+    this.http.put(`${this.apiUrl}/appointments/${appointmentId}`, updateData, { headers }).subscribe({
+      next: async () => {
+        const alert = await this.alertController.create({
+          header: 'Succès',
+          message: 'Rendez-vous refusé avec succès !',
+          buttons: ['OK'],
+        });
+        await alert.present();
+        this.loadAppointments();
+      },
+      error: async (err) => {
+        const alert = await this.alertController.create({
+          header: 'Erreur',
+          message: 'Erreur lors du refus du rendez-vous.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      },
+    });
+  }
+
+  loadNotifications() {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    if (!token || !userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<any[]>(`${this.apiUrl}/notifications/${userId}`, { headers }).subscribe({
+      next: (response) => {
+        this.notificationCount = response.length;
+      },
+      error: (err) => {
+        console.error('Error loading notifications:', err);
+      },
+    });
+  }
+
   goToAppointments() {
     this.router.navigate(['/appointments']);
   }
@@ -255,5 +378,22 @@ export class DoctorDashboardPage implements OnInit {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     this.router.navigate(['/home']);
+  }
+
+  contactPatient(patientId: string) {
+    // Stocker l'ID du patient dans le localStorage pour l'utiliser dans la page de messagerie
+    localStorage.setItem('selectedContactId', patientId);
+    // Naviguer vers la page de messagerie
+    this.router.navigate(['/messaging']);
+  }
+
+  goToMessaging() {
+    this.router.navigate(['/messaging']);
+  }
+
+  @ViewChild('photoInput') photoInput!: ElementRef;
+
+  triggerPhotoInput() {
+    this.photoInput.nativeElement.click();
   }
 }

@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-title>Mon Profil</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,18 +12,34 @@
   <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
 
   <div *ngIf="profile && !isEditing && !isLoading" class="profile-section">
+    <div class="profile-photo-container">
+      <div class="profile-photo">
+        <img [src]="profile.photo ? 'http://localhost:5000' + profile.photo : 'assets/default-user.jpg'" alt="Photo de profil">
+        <div class="photo-edit-button" (click)="triggerPhotoInput()">
+          <ion-icon name="camera"></ion-icon>
+        </div>
+        <input type="file" #photoInput accept="image/*" (change)="uploadPhoto($event)" style="display: none;">
+      </div>
+    </div>
+    
     <ion-card class="profile-card">
       <ion-card-header>
         <ion-card-title>{{ profile.name }} {{ profile.surname }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <p><strong>Email:</strong> {{ profile.email }}</p>
-        <p><strong>Créé le:</strong> {{ profile.created_at }}</p>
-        <p *ngIf="profile.updated_at"><strong>Mis à jour le:</strong> {{ profile.updated_at }}</p>
+        <p><strong>Créé le:</strong> {{ profile.created_at | date:'medium' }}</p>
+        <p *ngIf="profile.updated_at"><strong>Mis à jour le:</strong> {{ profile.updated_at | date:'medium' }}</p>
       </ion-card-content>
     </ion-card>
-    <ion-button expand="block" color="primary" (click)="toggleEdit()">Modifier le profil</ion-button>
-    <ion-button expand="block" color="danger" (click)="logout()">Se déconnecter</ion-button>
+    <ion-button expand="block" color="primary" (click)="toggleEdit()">
+      <ion-icon name="create-outline" slot="start"></ion-icon>
+      Modifier le profil
+    </ion-button>
+    <ion-button expand="block" color="danger" (click)="logout()">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      Se déconnecter
+    </ion-button>
   </div>
 
   <div *ngIf="isEditing && !isLoading" class="edit-section">
@@ -46,8 +65,14 @@
         <ion-label position="floating">Confirmer le mot de passe</ion-label>
         <ion-input [(ngModel)]="confirmPassword" name="confirmPassword" type="password"></ion-input>
       </ion-item>
-      <ion-button expand="block" type="submit" color="primary">Enregistrer</ion-button>
-      <ion-button expand="block" fill="clear" (click)="toggleEdit()">Annuler</ion-button>
+      <ion-button expand="block" type="submit" color="primary">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Enregistrer
+      </ion-button>
+      <ion-button expand="block" fill="clear" (click)="toggleEdit()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Annuler
+      </ion-button>
     </form>
   </div>
 

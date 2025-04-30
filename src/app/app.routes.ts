@@ -26,9 +26,21 @@ export const routes: Routes = [
     path: 'profile',
     loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
   },
+  // Ajout de la route home/profile pour rediriger vers profile
+  {
+    path: 'home/profile',
+    redirectTo: 'profile',
+    pathMatch: 'full'
+  },
   {
     path: 'appointments',
     loadComponent: () => import('./pages/appointments/appointments.page').then( m => m.AppointmentsPage)
+  },
+  // Ajout de la route home/appointments pour rediriger vers appointments
+  {
+    path: 'home/appointments',
+    redirectTo: 'appointments',
+    pathMatch: 'full'
   },
   {
     path: 'sidebar',
@@ -46,6 +58,12 @@ export const routes: Routes = [
     path: 'messaging',
     loadComponent: () => import('./pages/messaging/messaging.page').then( m => m.MessagingPage)
   },
+  // Ajout de la route home/messaging pour rediriger vers messaging
+  {
+    path: 'home/messaging',
+    redirectTo: 'messaging',
+    pathMatch: 'full'
+  },
   {
     path: 'notifications',
     loadComponent: () => import('./pages/notifications/notifications.page').then( m => m.NotificationsPage)
@@ -53,5 +71,14 @@ export const routes: Routes = [
   {
     path: 'registration-modal',
     loadComponent: () => import('./pages/registration-modal/registration-modal.page').then( m => m.RegistrationModalPage)
+  },
+  {
+    path: 'doctor-details',
+    loadComponent: () => import('./pages/doctor-details/doctor-details.page').then( m => m.DoctorDetailsPage)
+  },
+  // Ajout d'une route pour les détails des rendez-vous
+  {
+    path: 'appointment-details',
+    loadComponent: () => import('./pages/appointment-details/appointment-details.page').then( m => m.AppointmentDetailsPage)
   },
 ];

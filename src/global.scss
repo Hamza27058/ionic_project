@@ -35,3 +35,31 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+// Classes pour les couleurs personnalisées
+.ion-color-accept {
+  --ion-color-base: var(--ion-color-accept);
+  --ion-color-base-rgb: var(--ion-color-accept-rgb);
+  --ion-color-contrast: var(--ion-color-accept-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-accept-contrast-rgb);
+  --ion-color-shade: var(--ion-color-accept-shade);
+  --ion-color-tint: var(--ion-color-accept-tint);
+}
+
+.ion-color-decline {
+  --ion-color-base: var(--ion-color-decline);
+  --ion-color-base-rgb: var(--ion-color-decline-rgb);
+  --ion-color-contrast: var(--ion-color-decline-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-decline-contrast-rgb);
+  --ion-color-shade: var(--ion-color-decline-shade);
+  --ion-color-tint: var(--ion-color-decline-tint);
+}
+
+.ion-color-notification {
+  --ion-color-base: var(--ion-color-notification);
+  --ion-color-base-rgb: var(--ion-color-notification-rgb);
+  --ion-color-contrast: var(--ion-color-notification-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-notification-contrast-rgb);
+  --ion-color-shade: var(--ion-color-notification-shade);
+  --ion-color-tint: var(--ion-color-notification-tint);
+}

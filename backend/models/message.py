@@ -37,16 +37,25 @@ def get_messages(sender_id, receiver_id):
         message['_id'] = str(message['_id'])
     return messages
 
-def get_contacts(user_id, role):
+def get_contacts(user_id, role=None):
     contacts = []
+    # Si le rôle n'est pas défini, essayer de déterminer si c'est un médecin en vérifiant les rendez-vous
+    if role is None:
+        # Vérifier si l'utilisateur a des rendez-vous en tant que médecin
+        doctor_appointments = appointments_collection.find({'doctor_id': user_id}).limit(1)
+        if len(list(doctor_appointments)) > 0:
+            role = 'doctor'
+        else:
+            role = 'client'  # Par défaut, considérer comme client
+    
     if role == 'doctor':
-        appointments = appointments_collection.find({'doctor_id': user_id})
+        appointments = appointments_collection.find({'doctor_id': user_id, 'status': 'accepted'})
         client_ids = {str(appointment['user_id']) for appointment in appointments}
-        contacts = list(users_collection.find({'_id': {'$in': [ObjectId(id) for id in client_ids]}}))
+        contacts = list(users_collection.find({'_id': {'$in': [ObjectId(id) for id in client_ids]}})) if client_ids else []
     else:
-        appointments = appointments_collection.find({'user_id': user_id})
+        appointments = appointments_collection.find({'user_id': user_id, 'status': 'accepted'})
         doctor_ids = {str(appointment['doctor_id']) for appointment in appointments}
-        contacts = list(users_collection.find({'_id': {'$in': [ObjectId(id) for id in doctor_ids]}}))
+        contacts = list(users_collection.find({'_id': {'$in': [ObjectId(id) for id in doctor_ids]}})) if doctor_ids else []
     
     for contact in contacts:
         contact['_id'] = str(contact['_id'])

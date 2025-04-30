@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { IonicModule } from '@ionic/angular';
@@ -26,6 +26,9 @@ export class ProfilePage implements OnInit {
   email: string = '';
   password: string = '';
   confirmPassword: string = '';
+
+  // Référence à l'élément input de type file
+  @ViewChild('photoInput') photoInput!: ElementRef;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -113,5 +116,30 @@ export class ProfilePage implements OnInit {
 
   goBack() {
     this.router.navigate(['/home']);
+  }
+
+  triggerPhotoInput() {
+    this.photoInput.nativeElement.click();
+  }
+
+  uploadPhoto(event: any) {
+    const file = event.target.files[0];
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const formData = new FormData();
+    formData.append('photo', file);
+    this.isLoading = true;
+    this.http.post('http://localhost:5000/api/profile/photo', formData, { headers }).subscribe(
+      (response: any) => {
+        alert('Photo de profil mise à jour avec succès');
+        this.loadProfile();
+        this.isLoading = false;
+      },
+      error => {
+        console.error('Erreur lors de la mise à jour de la photo:', error);
+        this.isLoading = false;
+        alert(`Erreur: ${error.error?.error || 'Inconnue'}`);
+      }
+    );
   }
 }

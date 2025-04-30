@@ -1,144 +1,173 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Accueil</ion-title>
-    <ion-buttons slot="end">
-      @if (notificationCount > 0) {
-        <ion-badge color="danger">{{ notificationCount }}</ion-badge>
-      }
-      <ion-button (click)="openNotifications()">
-        <ion-icon name="notifications-outline"></ion-icon>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-title>
+      <div class="app-logo">
+        <ion-icon name="medkit" color="medical"></ion-icon>
+        <span>MediConnect</span>
+      </div>
+    </ion-title>
+    
+    <!-- Afficher les boutons de connexion/inscription si aucun utilisateur n'est connecté -->
+    <ion-buttons slot="end" *ngIf="!isLoggedIn">
+      <ion-button fill="clear" color="medical" (click)="goToLogin()">
+        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+        Connexion
+      </ion-button>
+      <ion-button fill="solid" color="medical" (click)="goToRegister()">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        Inscription
       </ion-button>
     </ion-buttons>
-  </ion-toolbar>
-  <ion-toolbar color="primary">
-    <ion-title size="small">Prenez rendez-vous avec les meilleurs médecins</ion-title>
+    
+    <!-- Afficher le bouton de profil si un utilisateur est connecté -->
+    <ion-buttons slot="end" *ngIf="isLoggedIn">
+      <ion-button fill="clear" color="medical" routerLink="/profile">
+        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" id="main-content">
-  @if (isLoading) {
-    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
-  }
-
-  @if (!isLoading) {
-    @if (!isLoggedIn) {
-      <div class="auth-section">
-        <ion-button expand="full" color="primary" (click)="goToLogin()">
-          <ion-icon name="log-in-outline" slot="start"></ion-icon>
+<ion-content>
+  <!-- Banner d'authentification pour les utilisateurs non connectés -->
+  <div class="auth-banner" *ngIf="!isLoggedIn">
+    <div class="banner-content">
+      <h2>Bienvenue sur MediConnect</h2>
+      <p>Connectez-vous pour prendre rendez-vous avec nos médecins</p>
+      <div class="banner-buttons">
+        <ion-button expand="block" fill="solid" color="medical" (click)="goToLogin()">
+          <ion-icon slot="start" name="log-in-outline"></ion-icon>
           Connexion
         </ion-button>
-        <ion-button expand="full" color="secondary" (click)="openRegisterModal()">
-          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+        <ion-button expand="block" fill="outline" color="medical" (click)="goToRegister()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
           Inscription
         </ion-button>
       </div>
-    }
+    </div>
+  </div>
 
-    <div class="search-container">
-      <ion-item class="search-bar">
-        <ion-icon name="search-outline" slot="start"></ion-icon>
-        <ion-input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (ionInput)="onSearch($event)"
-          placeholder="Médecin ou spécialité..."
-          debounce="300"
-        ></ion-input>
-      </ion-item>
-      <ion-button expand="full" color="primary" (click)="onSearch()">
-        <ion-icon name="search-outline" slot="start"></ion-icon>
-        Rechercher
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1>Trouvez le médecin qu'il vous faut</h1>
+      <p>Consultez nos spécialistes et prenez rendez-vous en quelques clics</p>
+      <ion-searchbar placeholder="Rechercher un médecin ou une spécialité" animated (ionChange)="searchDoctors($event)" class="custom-searchbar"></ion-searchbar>
+    </div>
+  </div>
+
+  <!-- Categories Section -->
+  <div class="categories-section">
+    <h2>Catégories</h2>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories" (click)="filterBySpecialty(category.name)">
+        <div class="category-icon" [ngStyle]="{'background-color': category.color}">
+          <ion-icon [name]="category.icon"></ion-icon>
+        </div>
+        <h3>{{ category.name }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctors Section -->
+  <div class="doctors-section">
+    <div class="section-header">
+      <h2>Nos médecins</h2>
+      <ion-button fill="clear" color="medical" (click)="resetFilter()" *ngIf="filteredSpecialty">
+        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+        Réinitialiser
       </ion-button>
     </div>
-
-    <div class="filters-section">
-      <ion-item>
-        <ion-label>Filtrer par ville</ion-label>
-        <ion-select [(ngModel)]="selectedCity" (ionChange)="onFilterChange()">
-          <ion-select-option value="">Toutes</ion-select-option>
-          @for (city of cities; track city) {
-            <ion-select-option [value]="city">{{ city }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
+    
+    <div class="filter-chip" *ngIf="filteredSpecialty">
+      <ion-chip color="medical">
+        <ion-label>{{ filteredSpecialty }}</ion-label>
+        <ion-icon name="close-circle" (click)="resetFilter()"></ion-icon>
+      </ion-chip>
     </div>
-
-    <div class="specialties-section">
-      <h2>Spécialités populaires</h2>
-      <ion-grid>
-        <ion-row>
-          @for (specialty of popularSpecialties; track specialty.name) {
-            <ion-col size="6" class="specialty-col">
-              <ion-card (click)="onSpecialtySelected(specialty)" class="specialty-card">
-                <ion-card-header>
-                  <ion-icon [name]="specialty.icon" class="specialty-icon"></ion-icon>
-                  <ion-card-title>{{ specialty.name }}</ion-card-title>
-                </ion-card-header>
-              </ion-card>
-            </ion-col>
-          }
-        </ion-row>
-      </ion-grid>
+    
+    <div class="doctors-grid">
+      <ion-card class="doctor-card" *ngFor="let doctor of doctors" (click)="viewDoctorDetails(doctor)">
+        <div class="doctor-card-header">
+          <ion-avatar>
+            <img [src]="doctor.profile_photo ? 'http://localhost:5000' + doctor.profile_photo : 'assets/default-avatar.png'" alt="{{ doctor.name }}">
+          </ion-avatar>
+          <div class="doctor-info">
+            <h3>Dr. {{ doctor.name }}</h3>
+            <p class="specialty">{{ doctor.specialty }}</p>
+            <div class="rating">
+              <ion-icon name="star" color="warning"></ion-icon>
+              <span>{{ doctor.rating || '4.8' }} ({{ doctor.reviews || '24' }} avis)</span>
+            </div>
+          </div>
+        </div>
+        <div class="doctor-card-content">
+          <div class="doctor-detail">
+            <ion-icon name="location-outline" color="medium"></ion-icon>
+            <span>{{ doctor.address || 'Paris, France' }}</span>
+          </div>
+          <div class="doctor-detail">
+            <ion-icon name="cash-outline" color="medium"></ion-icon>
+            <span>{{ doctor.price || '50€' }} / consultation</span>
+          </div>
+          <div class="doctor-detail">
+            <ion-icon name="calendar-outline" color="medium"></ion-icon>
+            <span>Disponible {{ doctor.availability || 'aujourd\'hui' }}</span>
+          </div>
+        </div>
+        <div class="doctor-card-footer">
+          <ion-button expand="block" fill="solid" color="medical">
+            <ion-icon slot="start" name="calendar"></ion-icon>
+            Prendre rendez-vous
+          </ion-button>
+        </div>
+      </ion-card>
     </div>
+  </div>
 
-    <div class="doctors-section">
-      <h2>Médecins disponibles</h2>
-      @if (errorMessage) {
-        <ion-text color="danger">{{ errorMessage }}</ion-text>
-      }
-      <ion-list>
-        @for (doctor of doctors; track doctor._id) {
-          <ion-item class="doctor-card">
-            <ion-avatar slot="start">
-              <img [src]="doctor.photo || 'assets/default-doctor.jpg'" alt="{{ doctor.name }}">
-            </ion-avatar>
-            <ion-label>
-              <h3>{{ doctor.name }}</h3>
-              <p>{{ doctor.specialty }}</p>
-              <p><ion-icon name="star" color="warning"></ion-icon> {{ doctor.rating || 'N/A' }}</p>
-            </ion-label>
-            <ion-button fill="clear" color="primary" (click)="toggleFavorite(doctor)">
-              <ion-icon [name]="doctor.isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" color="primary" (click)="bookAppointment(doctor)">
-              RDV
-            </ion-button>
-            <ion-button fill="clear" color="medium" (click)="viewDoctorDetails(doctor)">
-              Détails
-            </ion-button>
-          </ion-item>
-        }
-      </ion-list>
-    </div>
-  }
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="doctors.length === 0">
+    <ion-icon name="search-outline"></ion-icon>
+    <h3>Aucun médecin trouvé</h3>
+    <p>Essayez de modifier vos critères de recherche</p>
+    <ion-button fill="solid" color="medical" (click)="resetFilter()">
+      Réinitialiser la recherche
+    </ion-button>
+  </div>
+
+  <!-- Floating Action Button pour les utilisateurs connectés -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isLoggedIn">
+    <ion-fab-button color="medical" routerLink="/appointments">
+      <ion-icon name="calendar"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 
-<ion-footer>
-  <ion-toolbar color="light">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="4">
-          <ion-button expand="block" fill="clear" color="medium" (click)="goToProfile()">
-            <ion-icon name="person-outline" size="large"></ion-icon>
-            <ion-label>Profil</ion-label>
-          </ion-button>
-        </ion-col>
-        <ion-col size="4">
-          <ion-button expand="block" fill="clear" color="medium" (click)="goToAppointments()">
-            <ion-icon name="calendar-outline" size="large"></ion-icon>
-            <ion-label>Rendez-vous</ion-label>
-          </ion-button>
-        </ion-col>
-        <ion-col size="4">
-          <ion-button expand="block" fill="clear" color="medium" (click)="goToMessaging()">
-            <ion-icon name="chatbubbles-outline" size="large"></ion-icon>
-            <ion-label>Messages</ion-label>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+<ion-footer class="ion-no-border">
+  <ion-toolbar color="soft">
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="home" selected>
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Accueil</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="appointments" routerLink="/appointments">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <ion-label>RDV</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="notifications" routerLink="/notifications">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <ion-label>Notifications</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="messaging" routerLink="/messaging">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+          <ion-label>Messages</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="profile" routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon>
+          <ion-label>Profil</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
   </ion-toolbar>
 </ion-footer>

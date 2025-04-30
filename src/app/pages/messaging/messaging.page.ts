@@ -29,7 +29,6 @@ export class MessagingPage implements OnInit {
       return;
     }
     this.loadContacts();
-    this.loadMessages();
   }
 
   loadContacts() {
@@ -44,16 +43,48 @@ export class MessagingPage implements OnInit {
       })
       .subscribe({
         next: (response) => {
+          console.log('Contacts loaded:', response);
           this.contacts = response;
-          if (response.length > 0) {
+          
+          // Vérifier si un contact a été sélectionné depuis la page des notifications
+          const selectedContactId = localStorage.getItem('selectedContactId');
+          
+          if (selectedContactId && this.contacts.some(contact => contact._id === selectedContactId)) {
+            // Si le contact sélectionné existe dans la liste des contacts, l'utiliser
+            this.selectedContact = selectedContactId;
+            // Supprimer l'ID du contact sélectionné du localStorage pour ne pas l'utiliser à nouveau
+            localStorage.removeItem('selectedContactId');
+          } else if (response.length > 0) {
+            // Sinon, utiliser le premier contact de la liste
             this.selectedContact = response[0]._id;
+          } else {
+            // Aucun contact disponible
+            this.selectedContact = '';
+            console.log('Aucun contact disponible');
+          }
+          
+          // Charger les messages si un contact est sélectionné
+          if (this.selectedContact) {
             this.loadMessages();
           }
         },
         error: (err) => {
           console.error('Erreur lors du chargement des contacts', err);
+          // Afficher un message d'erreur à l'utilisateur
+          this.presentToast('Erreur lors du chargement des contacts. Veuillez réessayer plus tard.');
         },
       });
+  }
+
+  async presentToast(message: string) {
+    const toast = document.createElement('ion-toast');
+    toast.message = message;
+    toast.duration = 3000;
+    toast.position = 'bottom';
+    toast.color = 'danger';
+
+    document.body.appendChild(toast);
+    return toast.present();
   }
 
   loadMessages() {
@@ -100,5 +131,11 @@ export class MessagingPage implements OnInit {
 
   onContactChange() {
     this.loadMessages();
+  }
+
+  getContactName() {
+    if (!this.selectedContact) return '';
+    const contact = this.contacts.find(c => c._id === this.selectedContact);
+    return contact ? `${contact.name} ${contact.surname}` : '';
   }
 }

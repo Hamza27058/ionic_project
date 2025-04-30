@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
-from models.appointment import create_appointment, get_appointments, get_doctor_appointments, update_appointment
+from models.appointment import create_appointment, get_appointments, get_doctor_appointments, update_appointment, appointments_collection
 from models.notification import create_notification
 from models.user import get_user_by_id
 from models.doctor import get_doctors
 from utils.auth import login_required
 import logging
+from bson import ObjectId
 
 appointments_bp = Blueprint('appointments', __name__)
 logger = logging.getLogger(__name__)
@@ -85,6 +86,26 @@ def update_appointment_status(appointment_id, user_id):
                         'user_id': appointment['user_id'],
                         'message': notification_message
                     })
+                    
+                    # Si le rendez-vous est accepté, créer un message initial pour faciliter la communication
+                    if data['status'] == 'accepted':
+                        from models.message import create_message
+                        
+                        # Message du médecin au patient
+                        initial_message = {
+                            'sender_id': appointment['doctor_id'],
+                            'receiver_id': appointment['user_id'],
+                            'content': f"Bonjour, j'ai accepté votre rendez-vous pour le {appointment['date']}. N'hésitez pas à me contacter si vous avez des questions."
+                        }
+                        create_message(initial_message)
+                        
+                        # Notification pour informer le patient qu'il peut maintenant contacter le médecin
+                        contact_notification = {
+                            'user_id': appointment['user_id'],
+                            'message': f"Vous pouvez maintenant contacter Dr. {doctor['name']} {doctor['surname']} via la messagerie."
+                        }
+                        create_notification(contact_notification)
+            
             logger.info(f"Appointment updated: {appointment_id}")
             return jsonify({'message': 'Rendez-vous mis à jour'})
         raise ValueError('Aucune modification effectuée')

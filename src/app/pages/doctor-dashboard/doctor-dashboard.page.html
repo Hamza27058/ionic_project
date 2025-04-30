@@ -4,12 +4,25 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Tableau de bord Médecin</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToNotifications()">
+        <ion-icon name="notifications-outline"></ion-icon>
+        @if (notificationCount > 0) {
+          <ion-badge color="danger">{{ notificationCount }}</ion-badge>
+        }
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding" id="main-content">
+  <input type="file" #photoInput accept="image/*" (change)="uploadPhoto($event)" style="display: none;">
+
   @if (isLoading) {
-    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+    <div class="loading-container">
+      <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+      <p>Chargement de votre tableau de bord...</p>
+    </div>
   }
 
   @if (!isLoading) {
@@ -17,120 +30,293 @@
       <ion-text color="danger">{{ errorMessage }}</ion-text>
     }
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Profil</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item>
-          <ion-avatar slot="start">
-            <img [src]="profile.photo || 'assets/default-doctor.jpg'" alt="Profile Photo">
-          </ion-avatar>
-          <ion-label>
-            <h3>{{ profile.name }} {{ profile.surname }}</h3>
-            <p>{{ profile.specialty }}</p>
-            <p>{{ profile.city }}</p>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>Photo de profil</ion-label>
-          <input type="file" accept="image/*" (change)="uploadPhoto($event)" />
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Nom</ion-label>
-          <ion-input [(ngModel)]="profile.name"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Prénom</ion-label>
-          <ion-input [(ngModel)]="profile.surname"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" [(ngModel)]="profile.email"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Spécialité</ion-label>
-          <ion-input [(ngModel)]="profile.specialty"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Ville</ion-label>
-          <ion-input [(ngModel)]="profile.city"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Nouveau mot de passe</ion-label>
-          <ion-input type="password" [(ngModel)]="password"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Confirmer le mot de passe</ion-label>
-          <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
-        </ion-item>
-        <ion-button expand="full" color="primary" (click)="updateProfile()">Mettre à jour le profil</ion-button>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Messages</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          @for (contact of contacts; track contact._id) {
-            <ion-item button (click)="selectContact(contact)">
-              <ion-label>
-                <h3>{{ contact.name }} {{ contact.surname }}</h3>
-                <p>{{ contact.email }}</p>
-              </ion-label>
-            </ion-item>
-          }
-        </ion-list>
-        @if (selectedContact) {
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>Conversation avec {{ selectedContact.name }} {{ selectedContact.surname }}</ion-card-title>
-            </ion-card-header>
+    <!-- Résumé du tableau de bord -->
+    <ion-grid class="dashboard-summary">
+      <ion-row>
+        <ion-col size="12" size-md="4">
+          <ion-card class="summary-card">
             <ion-card-content>
-              <ion-list>
-                @for (message of messages; track message._id) {
-                  <ion-item>
-                    <ion-label>
-                      <h3>{{ message.sender_id === profile._id ? 'Vous' : selectedContact.name }}: {{ message.content }}</h3>
-                      <p>{{ message.created_at | date:'short' }}</p>
-                    </ion-label>
-                  </ion-item>
-                }
-              </ion-list>
-              <ion-item>
-                <ion-input [(ngModel)]="newMessage" placeholder="Écrire un message..."></ion-input>
-                <ion-button slot="end" (click)="sendMessage()">Envoyer</ion-button>
-              </ion-item>
+              <div class="card-icon">
+                <ion-icon name="calendar"></ion-icon>
+              </div>
+              <div class="card-info">
+                <h2>{{ pendingAppointmentsCount }}</h2>
+                <p>Rendez-vous en attente</p>
+              </div>
             </ion-card-content>
           </ion-card>
-        }
-      </ion-card-content>
-    </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="4">
+          <ion-card class="summary-card">
+            <ion-card-content>
+              <div class="card-icon">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+              <div class="card-info">
+                <h2>{{ acceptedAppointmentsCount }}</h2>
+                <p>Rendez-vous confirmés</p>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="4">
+          <ion-card class="summary-card">
+            <ion-card-content>
+              <div class="card-icon">
+                <ion-icon name="chatbubbles"></ion-icon>
+              </div>
+              <div class="card-info">
+                <h2>{{ contacts.length }}</h2>
+                <p>Patients en contact</p>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Options</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-button expand="full" color="medium" (click)="goToAppointments()">
-          <ion-icon name="calendar-outline" slot="start"></ion-icon>
-          Voir les rendez-vous
-        </ion-button>
-        <ion-button expand="full" color="medium" (click)="goToNotifications()">
-          <ion-icon name="notifications-outline" slot="start"></ion-icon>
-          Voir les notifications
-        </ion-button>
-        <ion-button expand="full" color="medium" (click)="goToSettings()">
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
-          Paramètres
-        </ion-button>
-        <ion-button expand="full" color="danger" (click)="logout()">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          Déconnexion
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+    <!-- Onglets pour naviguer entre les sections -->
+    <ion-segment [(ngModel)]="selectedTab" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="appointments">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <ion-label>Rendez-vous</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="messages">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <ion-label>Messages</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="profile">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Profil</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Section des rendez-vous -->
+    @if (selectedTab === 'appointments') {
+      <ion-card>
+        <ion-card-header>
+          <div class="card-header-flex">
+            <ion-card-title>Rendez-vous en attente</ion-card-title>
+            <ion-button fill="clear" (click)="goToAppointments()">
+              Voir tous
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            @for (appointment of pendingAppointments; track appointment._id) {
+              <ion-item class="appointment-item">
+                <ion-avatar slot="start">
+                  <img src="assets/default-user.jpg" alt="Patient">
+                </ion-avatar>
+                <ion-label>
+                  <h3>Patient: {{ appointment.user_name }}</h3>
+                  <p><ion-icon name="calendar-outline"></ion-icon> {{ appointment.date | date:'EEEE d MMMM y' }}</p>
+                  <p><ion-icon name="time-outline"></ion-icon> {{ appointment.date | date:'HH:mm' }}</p>
+                </ion-label>
+                <ion-buttons slot="end">
+                  <ion-button color="success" (click)="acceptAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                  </ion-button>
+                  <ion-button color="danger" (click)="rejectAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
+            }
+            @if (pendingAppointments.length === 0) {
+              <ion-item>
+                <ion-label class="ion-text-center">
+                  <ion-icon name="calendar-clear-outline" size="large"></ion-icon>
+                  <p>Aucun rendez-vous en attente</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Rendez-vous confirmés</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            @for (appointment of acceptedAppointments; track appointment._id) {
+              <ion-item class="appointment-item">
+                <ion-avatar slot="start">
+                  <img src="assets/default-user.jpg" alt="Patient">
+                </ion-avatar>
+                <ion-label>
+                  <h3>Patient: {{ appointment.user_name }}</h3>
+                  <p><ion-icon name="calendar-outline"></ion-icon> {{ appointment.date | date:'EEEE d MMMM y' }}</p>
+                  <p><ion-icon name="time-outline"></ion-icon> {{ appointment.date | date:'HH:mm' }}</p>
+                </ion-label>
+                <ion-button fill="clear" color="primary" (click)="contactPatient(appointment.user_id)">
+                  <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+                  Contacter
+                </ion-button>
+              </ion-item>
+            }
+            @if (acceptedAppointments.length === 0) {
+              <ion-item>
+                <ion-label class="ion-text-center">
+                  <ion-icon name="calendar-clear-outline" size="large"></ion-icon>
+                  <p>Aucun rendez-vous confirmé</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- Section des messages -->
+    @if (selectedTab === 'messages') {
+      <ion-card>
+        <ion-card-header>
+          <div class="card-header-flex">
+            <ion-card-title>Messages</ion-card-title>
+            <ion-button fill="clear" (click)="goToMessaging()">
+              Voir tous
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            @for (contact of contacts; track contact._id) {
+              <ion-item button (click)="selectContact(contact)" [class.selected-contact]="selectedContact && selectedContact._id === contact._id">
+                <ion-avatar slot="start">
+                  <img [src]="contact.photo ? 'http://localhost:5000' + contact.photo : 'assets/default-user.jpg'" alt="{{ contact.name }}">
+                </ion-avatar>
+                <ion-label>
+                  <h3>{{ contact.name }} {{ contact.surname }}</h3>
+                  <p>{{ contact.email }}</p>
+                </ion-label>
+              </ion-item>
+            }
+            @if (!contacts.length) {
+              <ion-item>
+                <ion-label class="ion-text-center">
+                  <ion-icon name="chatbubbles-outline" size="large"></ion-icon>
+                  <p>Aucun contact disponible</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+          @if (selectedContact) {
+            <div class="message-container">
+              <div class="message-header">
+                <h3>Conversation avec {{ selectedContact.name }} {{ selectedContact.surname }}</h3>
+              </div>
+              <div class="messages-list">
+                @if (messages.length === 0) {
+                  <div class="no-messages">
+                    <p>Aucun message. Commencez la conversation !</p>
+                  </div>
+                } @else {
+                  @for (message of messages; track message._id) {
+                    <div class="message-item" [class.message-sent]="message.sender_id === profile._id" [class.message-received]="message.sender_id !== profile._id">
+                      <div class="message-content">
+                        <p>{{ message.content }}</p>
+                        <span class="message-time">{{ message.created_at | date:'short' }}</span>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+              <div class="message-input">
+                <ion-item>
+                  <ion-input [(ngModel)]="newMessage" placeholder="Écrire un message..." (keyup.enter)="sendMessage()"></ion-input>
+                  <ion-button slot="end" (click)="sendMessage()" [disabled]="!newMessage">
+                    <ion-icon name="send-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </div>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- Section du profil -->
+    @if (selectedTab === 'profile') {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Informations du profil</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="profile-header">
+            <ion-avatar>
+              <img [src]="profile.photo ? 'http://localhost:5000' + profile.photo : 'assets/default-doctor.jpg'" alt="Profile Photo">
+            </ion-avatar>
+            <div class="profile-info">
+              <h2>Dr. {{ profile.name }} {{ profile.surname }}</h2>
+              <p>{{ profile.specialty }}</p>
+              <div class="profile-actions">
+                <ion-button size="small" fill="outline" (click)="triggerPhotoInput()">
+                  <ion-icon name="camera-outline" slot="start"></ion-icon>
+                  Changer la photo
+                </ion-button>
+                <ion-button size="small" color="danger" (click)="logout()">
+                  <ion-icon name="log-out-outline" slot="start"></ion-icon>
+                  Déconnexion
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <ion-list lines="full">
+            <ion-item>
+              <ion-label position="stacked">Photo de profil</ion-label>
+              <input type="file" accept="image/*" (change)="uploadPhoto($event)" />
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Nom</ion-label>
+              <ion-input [(ngModel)]="profile.name"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Prénom</ion-label>
+              <ion-input [(ngModel)]="profile.surname"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Email</ion-label>
+              <ion-input type="email" [(ngModel)]="profile.email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Spécialité</ion-label>
+              <ion-input [(ngModel)]="profile.specialty"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Ville</ion-label>
+              <ion-input [(ngModel)]="profile.city"></ion-input>
+            </ion-item>
+          </ion-list>
+
+          <ion-list-header>
+            <ion-label>Changer le mot de passe</ion-label>
+          </ion-list-header>
+          <ion-list lines="full">
+            <ion-item>
+              <ion-label position="stacked">Nouveau mot de passe</ion-label>
+              <ion-input type="password" [(ngModel)]="password"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Confirmer le mot de passe</ion-label>
+              <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
+            </ion-item>
+          </ion-list>
+
+          <div class="button-container">
+            <ion-button expand="block" color="primary" (click)="updateProfile()">
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+              Mettre à jour le profil
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
   }
 </ion-content>

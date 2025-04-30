@@ -14,9 +14,14 @@ def list_contacts(user_id):
     try:
         user = get_user_by_id(user_id)
         if not user:
-            raise ValueError('Utilisateur non trouvé')
-        contacts = get_contacts(user_id, user['role'])
-        logger.info(f"Retrieved contacts for user: {user_id}")
+            logger.error(f"User not found: {user_id}")
+            return jsonify({'error': 'Utilisateur non trouvé'}), 404
+        
+        # Vérifier si le rôle est défini dans l'utilisateur
+        role = user.get('role')
+        
+        contacts = get_contacts(user_id, role)
+        logger.info(f"Retrieved contacts for user: {user_id}, role: {role if role else 'not defined'}")
         return jsonify(contacts)
     except ValueError as e:
         logger.error(f"Contacts error: {str(e)}")

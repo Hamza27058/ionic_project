@@ -73,7 +73,11 @@ def login():
         if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password']):
             token = generate_token(str(user['_id']))
             logger.info(f"User logged in: {data['email']}")
-            return jsonify({'token': token, 'user_id': str(user['_id'])})
+            return jsonify({
+                'token': token, 
+                'user_id': str(user['_id']),
+                'user_type': user.get('role', 'client')
+            })
         raise ValueError('Identifiants invalides')
     except ValueError as e:
         logger.error(f"Login error: {str(e)}")

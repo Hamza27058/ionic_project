@@ -25,10 +25,24 @@
           @for (appointment of appointments; track appointment._id) {
             <ion-item>
               <ion-label>
-                <h3>Médecin: {{ appointment.doctor_name }}</h3>
+                @if (appointment.doctor_name) {
+                  <h3>Médecin: {{ appointment.doctor_name }}</h3>
+                } @else {
+                  <h3>Patient: {{ appointment.user_name }}</h3>
+                }
                 <p>Date: {{ appointment.date | date:'short' }}</p>
                 <p>Statut: {{ appointment.status }}</p>
               </ion-label>
+              @if (appointment.status === 'pending') {
+                <ion-buttons slot="end">
+                  <ion-button (click)="acceptAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="checkmark-circle" color="success"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="rejectAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="close-circle" color="danger"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              }
             </ion-item>
           }
           @if (!appointments.length) {
