@@ -60,6 +60,8 @@ export class LoginPage implements OnInit {
             const role = user.role || 'client';
             if (role === 'doctor') {
               this.router.navigate(['/doctor-dashboard']);
+            } else if (role === 'admin') {
+              this.router.navigate(['/admin']);
             } else {
               this.router.navigate(['/home']);
             }

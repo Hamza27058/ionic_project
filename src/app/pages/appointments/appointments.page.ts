@@ -9,11 +9,13 @@ interface Appointment {
   doctor_id: string;
   user_id: string;
   date: string;
+  time?: string;
   status: string;
   created_at: string;
   updated_at: string;
   user_name: string;
   doctor_name: string;
+  specialty?: string;
 }
 
 @Component({
@@ -25,8 +27,10 @@ interface Appointment {
 })
 export class AppointmentsPage implements OnInit {
   appointments: Appointment[] = [];
+  filteredAppointments: Appointment[] = [];
   isLoading = false;
   errorMessage = '';
+  currentFilter: string = 'all'; // 'all', 'upcoming', 'completed', 'pending'
   private apiUrl = 'http://localhost:5000/api';
 
   constructor(
@@ -62,8 +66,15 @@ export class AppointmentsPage implements OnInit {
     this.http.get<Appointment[]>(endpoint, { headers }).subscribe({
       next: (response) => {
         console.log('Appointments loaded:', response);
-        // Filtrer les rendez-vous pour n'afficher que ceux qui sont en attente (pending)
-        this.appointments = response.filter(appointment => appointment.status === 'pending');
+        // Ajouter l'heure à partir de la date si elle n'existe pas
+        this.appointments = response.map(appointment => {
+          if (!appointment.time) {
+            const dateObj = new Date(appointment.date);
+            appointment.time = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          }
+          return appointment;
+        });
+        this.filterAppointments(this.currentFilter);
         this.isLoading = false;
       },
       error: async (err) => {
@@ -78,6 +89,83 @@ export class AppointmentsPage implements OnInit {
         await alert.present();
       },
     });
+  }
+
+  filterAppointments(filter: string) {
+    this.currentFilter = filter;
+    
+    switch (filter) {
+      case 'all':
+        this.filteredAppointments = [...this.appointments];
+        break;
+      case 'upcoming':
+        this.filteredAppointments = this.appointments.filter(app => app.status === 'accepted');
+        break;
+      case 'completed':
+        this.filteredAppointments = this.appointments.filter(app => app.status === 'completed');
+        break;
+      case 'pending':
+        this.filteredAppointments = this.appointments.filter(app => app.status === 'pending');
+        break;
+      default:
+        this.filteredAppointments = [...this.appointments];
+    }
+  }
+
+  getFilterLabel(): string {
+    switch (this.currentFilter) {
+      case 'all': return '';
+      case 'upcoming': return 'à venir';
+      case 'completed': return 'terminés';
+      case 'pending': return 'en attente';
+      default: return '';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'pending': return 'En attente';
+      case 'accepted': return 'Confirmé';
+      case 'completed': return 'Terminé';
+      case 'rejected': return 'Refusé';
+      default: return status;
+    }
+  }
+
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'pending': return 'warning';
+      case 'accepted': return 'primary';
+      case 'completed': return 'success';
+      case 'rejected': return 'danger';
+      default: return 'medium';
+    }
+  }
+
+  getStatusClass(status: string): string {
+    return `status-${status}`;
+  }
+
+  extractDay(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.getDate().toString();
+  }
+
+  extractMonth(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleString('fr-FR', { month: 'short' });
+  }
+
+  getCompletedCount(): number {
+    return this.appointments.filter(app => app.status === 'completed').length;
+  }
+
+  getPendingCount(): number {
+    return this.appointments.filter(app => app.status === 'pending').length;
+  }
+
+  viewAppointmentDetails(appointment: Appointment) {
+    this.router.navigate(['/appointment-details'], { state: { appointment } });
   }
 
   acceptAppointment(appointmentId: string) {

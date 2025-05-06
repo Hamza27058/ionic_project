@@ -68,6 +68,12 @@ export const routes: Routes = [
     path: 'notifications',
     loadComponent: () => import('./pages/notifications/notifications.page').then( m => m.NotificationsPage)
   },
+  // Ajout de la route home/notifications pour rediriger vers notifications
+  {
+    path: 'home/notifications',
+    redirectTo: 'notifications',
+    pathMatch: 'full'
+  },
   {
     path: 'registration-modal',
     loadComponent: () => import('./pages/registration-modal/registration-modal.page').then( m => m.RegistrationModalPage)
@@ -80,5 +86,9 @@ export const routes: Routes = [
   {
     path: 'appointment-details',
     loadComponent: () => import('./pages/appointment-details/appointment-details.page').then( m => m.AppointmentDetailsPage)
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin.page').then( m => m.AdminPage)
   },
 ];

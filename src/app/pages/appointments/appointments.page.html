@@ -1,57 +1,151 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/" class="custom-back-button"></ion-back-button>
     </ion-buttons>
-    <ion-title>Rendez-vous</ion-title>
+    <ion-title>Mes rendez-vous</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="notification-btn">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding" id="main-content">
   @if (isLoading) {
-    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+    <div class="loading-container">
+      <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+      <p>Chargement de vos rendez-vous...</p>
+    </div>
   }
 
   @if (!isLoading) {
     @if (errorMessage) {
-      <ion-text color="danger">{{ errorMessage }}</ion-text>
+      <div class="error-container">
+        <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+        <ion-text color="danger">{{ errorMessage }}</ion-text>
+      </div>
     }
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Vos rendez-vous</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          @for (appointment of appointments; track appointment._id) {
-            <ion-item>
-              <ion-label>
+    
+    <!-- Filtres de statut -->
+    <div class="filter-tabs">
+      <div class="filter-tab" [ngClass]="{'active': currentFilter === 'all'}" (click)="filterAppointments('all')">
+        <span>Tous</span>
+      </div>
+      <div class="filter-tab" [ngClass]="{'active': currentFilter === 'upcoming'}" (click)="filterAppointments('upcoming')">
+        <span>À venir</span>
+      </div>
+      <div class="filter-tab" [ngClass]="{'active': currentFilter === 'completed'}" (click)="filterAppointments('completed')">
+        <span>Terminés</span>
+      </div>
+      <div class="filter-tab" [ngClass]="{'active': currentFilter === 'pending'}" (click)="filterAppointments('pending')">
+        <span>En attente</span>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #6C5CE7, #3F8CFF);">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <h4>{{ filteredAppointments.length }}</h4>
+          <p>Rendez-vous</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10B981, #3ABAB4);">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <h4>{{ getCompletedCount() }}</h4>
+          <p>Terminés</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #F97316, #F59E0B);">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <h4>{{ getPendingCount() }}</h4>
+          <p>En attente</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des rendez-vous -->
+    <h2 class="section-title">Rendez-vous {{ getFilterLabel() }}</h2>
+    
+    <div class="appointments-list">
+      @for (appointment of filteredAppointments; track appointment._id) {
+        <div class="appointment-card" [ngClass]="getStatusClass(appointment.status)">
+          <div class="appointment-header">
+            <div class="appointment-date">
+              <div class="date-badge">
+                <span class="day">{{ extractDay(appointment.date) }}</span>
+                <span class="month">{{ extractMonth(appointment.date) }}</span>
+              </div>
+              <span class="time">{{ appointment.time }}</span>
+            </div>
+            <div class="appointment-status">
+              <ion-badge [color]="getStatusColor(appointment.status)">{{ getStatusLabel(appointment.status) }}</ion-badge>
+            </div>
+          </div>
+          
+          <div class="appointment-content">
+            <div class="doctor-info">
+              <div class="avatar-placeholder">
+                <ion-icon name="person"></ion-icon>
+              </div>
+              <div class="doctor-details">
                 @if (appointment.doctor_name) {
-                  <h3>Médecin: {{ appointment.doctor_name }}</h3>
+                  <h3>Dr. {{ appointment.doctor_name }}</h3>
                 } @else {
-                  <h3>Patient: {{ appointment.user_name }}</h3>
+                  <h3>{{ appointment.user_name }}</h3>
                 }
-                <p>Date: {{ appointment.date | date:'short' }}</p>
-                <p>Statut: {{ appointment.status }}</p>
-              </ion-label>
+                <p class="specialty">{{ appointment.specialty || 'Consultation générale' }}</p>
+              </div>
+            </div>
+            
+            <div class="appointment-actions">
               @if (appointment.status === 'pending') {
-                <ion-buttons slot="end">
-                  <ion-button (click)="acceptAppointment(appointment._id)">
-                    <ion-icon slot="icon-only" name="checkmark-circle" color="success"></ion-icon>
-                  </ion-button>
-                  <ion-button (click)="rejectAppointment(appointment._id)">
-                    <ion-icon slot="icon-only" name="close-circle" color="danger"></ion-icon>
-                  </ion-button>
-                </ion-buttons>
+                <ion-button fill="clear" color="success" (click)="acceptAppointment(appointment._id)">
+                  <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                  Accepter
+                </ion-button>
+                <ion-button fill="clear" color="danger" (click)="rejectAppointment(appointment._id)">
+                  <ion-icon slot="start" name="close-circle"></ion-icon>
+                  Refuser
+                </ion-button>
               }
-            </ion-item>
-          }
-          @if (!appointments.length) {
-            <ion-item>
-              <ion-label>Aucun rendez-vous trouvé</ion-label>
-            </ion-item>
-          }
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+              @if (appointment.status === 'accepted') {
+                <ion-button fill="clear" color="primary" (click)="viewAppointmentDetails(appointment)">
+                  <ion-icon slot="start" name="eye-outline"></ion-icon>
+                  Détails
+                </ion-button>
+              }
+              @if (appointment.status === 'completed') {
+                <ion-button fill="clear" color="medium" (click)="viewAppointmentDetails(appointment)">
+                  <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                  Rapport
+                </ion-button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+      
+      @if (!filteredAppointments.length) {
+        <div class="empty-state">
+          <ion-icon name="calendar-outline" size="large"></ion-icon>
+          <h3>Aucun rendez-vous {{ getFilterLabel() }}</h3>
+          <p>Les rendez-vous que vous prenez apparaîtront ici</p>
+        </div>
+      }
+    </div>
   }
 </ion-content>

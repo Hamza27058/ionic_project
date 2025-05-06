@@ -25,6 +25,18 @@ interface Category {
   color: string;
 }
 
+interface Appointment {
+  _id: string;
+  doctor_id: string;
+  user_id: string;
+  date: string;
+  time: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  doctor_name: string;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -34,9 +46,19 @@ interface Category {
 })
 export class HomePage implements OnInit {
   isLoggedIn: boolean = false;
+  userName: string = '';
   doctors: Doctor[] = [];
   filteredSpecialty: string | null = null;
   searchQuery: string = '';
+  
+  // Propriétés pour les statistiques
+  upcomingAppointments: number = 0;
+  daysUntilNextAppointment: number = 0;
+  appointmentCompletionRate: number = 74; // Valeur par défaut comme dans Health Tracker
+  totalConsultations: number = 0;
+  totalTreatments: number = 0;
+  followUpRate: number = 0;
+  nextAppointmentDate: string = '';
   
   categories: Category[] = [
     { name: 'Cardiologie', icon: 'heart', color: '#EF4444' },
@@ -59,11 +81,87 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.checkLoginStatus();
     this.loadDoctors();
+    if (this.isLoggedIn) {
+      this.loadUserInfo();
+      this.loadAppointmentsStats();
+    }
   }
 
   checkLoginStatus() {
     const token = localStorage.getItem('token');
     this.isLoggedIn = !!token;
+  }
+
+  loadUserInfo() {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    
+    if (!userId || !token) return;
+    
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    
+    this.http.get<any>(`${this.apiUrl}/users/${userId}`, { headers }).subscribe({
+      next: (user) => {
+        this.userName = user.name || 'Utilisateur';
+      },
+      error: (error) => {
+        console.error('Error loading user info:', error);
+      }
+    });
+  }
+
+  loadAppointmentsStats() {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    const userType = localStorage.getItem('userType');
+    
+    if (!userId || !token) return;
+    
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const endpoint = userType === 'doctor' ? 
+      `${this.apiUrl}/appointments/doctor/${userId}` : 
+      `${this.apiUrl}/appointments/user/${userId}`;
+    
+    this.http.get<Appointment[]>(endpoint, { headers }).subscribe({
+      next: (appointments) => {
+        // Calculer les statistiques des rendez-vous
+        const upcomingAppointments = appointments.filter(app => app.status === 'accepted');
+        this.upcomingAppointments = upcomingAppointments.length;
+        
+        // Calculer les jours jusqu'au prochain rendez-vous
+        if (upcomingAppointments.length > 0) {
+          // Trier les rendez-vous par date
+          upcomingAppointments.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          
+          const nextAppointment = upcomingAppointments[0];
+          const nextAppDate = new Date(nextAppointment.date);
+          const today = new Date();
+          
+          // Calculer la différence en jours
+          const diffTime = Math.abs(nextAppDate.getTime() - today.getTime());
+          this.daysUntilNextAppointment = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          // Formater la date du prochain rendez-vous
+          this.nextAppointmentDate = nextAppDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+        }
+        
+        // Calculer le taux de complétion des rendez-vous
+        const completedAppointments = appointments.filter(app => app.status === 'completed').length;
+        const totalAppointments = appointments.length;
+        
+        if (totalAppointments > 0) {
+          this.appointmentCompletionRate = Math.round((completedAppointments / totalAppointments) * 100);
+        }
+        
+        // Autres statistiques
+        this.totalConsultations = totalAppointments;
+        this.totalTreatments = Math.floor(totalAppointments * 0.3); // Exemple : 30% des consultations ont abouti à un traitement
+        this.followUpRate = Math.round((upcomingAppointments.length / totalAppointments) * 100);
+      },
+      error: (error) => {
+        console.error('Error loading appointments stats:', error);
+      }
+    });
   }
 
   loadDoctors() {

@@ -6,6 +6,7 @@ from routes.doctors import doctors_bp
 from routes.appointments import appointments_bp
 from routes.messages import messages_bp
 from routes.notifications import notifications_bp
+from routes.admin import admin_bp
 from utils.errors import handle_error
 from utils.logger import setup_logging
 import logging
@@ -24,6 +25,7 @@ app.register_blueprint(doctors_bp, url_prefix='/api')
 app.register_blueprint(appointments_bp, url_prefix='/api')
 app.register_blueprint(messages_bp, url_prefix='/api')
 app.register_blueprint(notifications_bp, url_prefix='/api')
+app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
 # Error handling
 app.register_error_handler(Exception, handle_error)

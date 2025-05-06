@@ -1,28 +1,12 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="light">
-    <ion-title>
-      <div class="app-logo">
-        <ion-icon name="medkit" color="medical"></ion-icon>
-        <span>MediConnect</span>
-      </div>
-    </ion-title>
-    
-    <!-- Afficher les boutons de connexion/inscription si aucun utilisateur n'est connecté -->
-    <ion-buttons slot="end" *ngIf="!isLoggedIn">
-      <ion-button fill="clear" color="medical" (click)="goToLogin()">
-        <ion-icon slot="start" name="log-in-outline"></ion-icon>
-        Connexion
-      </ion-button>
-      <ion-button fill="solid" color="medical" (click)="goToRegister()">
-        <ion-icon slot="start" name="person-add-outline"></ion-icon>
-        Inscription
-      </ion-button>
-    </ion-buttons>
-    
-    <!-- Afficher le bouton de profil si un utilisateur est connecté -->
-    <ion-buttons slot="end" *ngIf="isLoggedIn">
-      <ion-button fill="clear" color="medical" routerLink="/profile">
-        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <div class="welcome-header">
+      <p class="greeting">Bonjour</p>
+      <h2 class="user-name">{{ userName || 'Bienvenue' }} !</h2>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/notifications" class="notification-btn">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -35,11 +19,11 @@
       <h2>Bienvenue sur MediConnect</h2>
       <p>Connectez-vous pour prendre rendez-vous avec nos médecins</p>
       <div class="banner-buttons">
-        <ion-button expand="block" fill="solid" color="medical" (click)="goToLogin()">
+        <ion-button expand="block" fill="solid" (click)="goToLogin()">
           <ion-icon slot="start" name="log-in-outline"></ion-icon>
           Connexion
         </ion-button>
-        <ion-button expand="block" fill="outline" color="medical" (click)="goToRegister()">
+        <ion-button expand="block" fill="outline" (click)="goToRegister()">
           <ion-icon slot="start" name="person-add-outline"></ion-icon>
           Inscription
         </ion-button>
@@ -47,104 +31,138 @@
     </div>
   </div>
 
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1>Trouvez le médecin qu'il vous faut</h1>
-      <p>Consultez nos spécialistes et prenez rendez-vous en quelques clics</p>
-      <ion-searchbar placeholder="Rechercher un médecin ou une spécialité" animated (ionChange)="searchDoctors($event)" class="custom-searchbar"></ion-searchbar>
+  <!-- Carte de statistiques pour les utilisateurs connectés -->
+  <div class="container" *ngIf="isLoggedIn">
+    <div class="stat-card">
+      <div class="flex justify-between">
+        <div>
+          <div class="stat-title">Mon Suivi</div>
+          <div class="stat-value">{{ upcomingAppointments }} RDV</div>
+          <div class="stat-subtitle">Prochain rendez-vous dans {{ daysUntilNextAppointment }} jours</div>
+        </div>
+        <div class="stat-percentage">
+          <div class="percentage-circle">
+            <span>{{ appointmentCompletionRate }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grille de métriques -->
+    <h3 class="section-title">Mes activités</h3>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon running">
+          <ion-icon name="fitness-outline"></ion-icon>
+        </div>
+        <div class="metric-label">Consultations</div>
+        <div class="metric-value">{{ totalConsultations || '12' }}</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon calories">
+          <ion-icon name="medkit-outline"></ion-icon>
+        </div>
+        <div class="metric-label">Traitements</div>
+        <div class="metric-value">{{ totalTreatments || '3' }}</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon cycling">
+          <ion-icon name="pulse-outline"></ion-icon>
+        </div>
+        <div class="metric-label">Suivi</div>
+        <div class="metric-value">{{ followUpRate || '85' }}%</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon sleeping">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+        <div class="metric-label">Prochain RDV</div>
+        <div class="metric-value">{{ nextAppointmentDate || '12 Mai' }}</div>
+      </div>
     </div>
   </div>
 
-  <!-- Categories Section -->
-  <div class="categories-section">
-    <h2>Catégories</h2>
+  <!-- Recherche de médecins -->
+  <div class="container">
+    <div class="search-section">
+      <h3 class="section-title">Rechercher un médecin</h3>
+      <ion-searchbar placeholder="Spécialité, nom..." animated (ionChange)="searchDoctors($event)" class="custom-searchbar"></ion-searchbar>
+    </div>
+
+    <!-- Catégories de spécialités -->
+    <h3 class="section-title">Spécialités</h3>
     <div class="categories-grid">
       <div class="category-card" *ngFor="let category of categories" (click)="filterBySpecialty(category.name)">
         <div class="category-icon" [ngStyle]="{'background-color': category.color}">
           <ion-icon [name]="category.icon"></ion-icon>
         </div>
-        <h3>{{ category.name }}</h3>
+        <div class="category-name">{{ category.name }}</div>
       </div>
     </div>
-  </div>
 
-  <!-- Doctors Section -->
-  <div class="doctors-section">
-    <div class="section-header">
-      <h2>Nos médecins</h2>
-      <ion-button fill="clear" color="medical" (click)="resetFilter()" *ngIf="filteredSpecialty">
-        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
-        Réinitialiser
+    <!-- Liste des médecins -->
+    <div class="doctors-section">
+      <div class="section-header">
+        <h3 class="section-title">Médecins disponibles</h3>
+        <ion-button fill="clear" size="small" (click)="resetFilter()" *ngIf="filteredSpecialty">
+          <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+          Réinitialiser
+        </ion-button>
+      </div>
+      
+      <div class="filter-chip" *ngIf="filteredSpecialty">
+        <ion-chip color="primary">
+          <ion-label>{{ filteredSpecialty }}</ion-label>
+          <ion-icon name="close-circle" (click)="resetFilter()"></ion-icon>
+        </ion-chip>
+      </div>
+      
+      <div class="doctors-list">
+        <ion-card class="doctor-card" *ngFor="let doctor of doctors" (click)="viewDoctorDetails(doctor)">
+          <div class="doctor-card-content">
+            <ion-avatar>
+              <img [src]="doctor.profile_photo ? 'http://localhost:5000' + doctor.profile_photo : 'assets/default-avatar.png'" alt="{{ doctor.name }}">
+            </ion-avatar>
+            <div class="doctor-info">
+              <h4 class="doctor-name">Dr. {{ doctor.name }}</h4>
+              <p class="doctor-specialty">{{ doctor.specialty }}</p>
+              <div class="doctor-rating">
+                <ion-icon name="star" color="warning"></ion-icon>
+                <span>{{ doctor.rating || '4.8' }}</span>
+              </div>
+            </div>
+            <ion-button fill="clear" size="small">
+              <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Message si aucun médecin n'est trouvé -->
+    <div class="empty-state" *ngIf="doctors.length === 0">
+      <ion-icon name="search-outline"></ion-icon>
+      <h3>Aucun médecin trouvé</h3>
+      <p>Essayez de modifier vos critères de recherche</p>
+      <ion-button (click)="resetFilter()">
+        Réinitialiser la recherche
       </ion-button>
     </div>
-    
-    <div class="filter-chip" *ngIf="filteredSpecialty">
-      <ion-chip color="medical">
-        <ion-label>{{ filteredSpecialty }}</ion-label>
-        <ion-icon name="close-circle" (click)="resetFilter()"></ion-icon>
-      </ion-chip>
-    </div>
-    
-    <div class="doctors-grid">
-      <ion-card class="doctor-card" *ngFor="let doctor of doctors" (click)="viewDoctorDetails(doctor)">
-        <div class="doctor-card-header">
-          <ion-avatar>
-            <img [src]="doctor.profile_photo ? 'http://localhost:5000' + doctor.profile_photo : 'assets/default-avatar.png'" alt="{{ doctor.name }}">
-          </ion-avatar>
-          <div class="doctor-info">
-            <h3>Dr. {{ doctor.name }}</h3>
-            <p class="specialty">{{ doctor.specialty }}</p>
-            <div class="rating">
-              <ion-icon name="star" color="warning"></ion-icon>
-              <span>{{ doctor.rating || '4.8' }} ({{ doctor.reviews || '24' }} avis)</span>
-            </div>
-          </div>
-        </div>
-        <div class="doctor-card-content">
-          <div class="doctor-detail">
-            <ion-icon name="location-outline" color="medium"></ion-icon>
-            <span>{{ doctor.address || 'Paris, France' }}</span>
-          </div>
-          <div class="doctor-detail">
-            <ion-icon name="cash-outline" color="medium"></ion-icon>
-            <span>{{ doctor.price || '50€' }} / consultation</span>
-          </div>
-          <div class="doctor-detail">
-            <ion-icon name="calendar-outline" color="medium"></ion-icon>
-            <span>Disponible {{ doctor.availability || 'aujourd\'hui' }}</span>
-          </div>
-        </div>
-        <div class="doctor-card-footer">
-          <ion-button expand="block" fill="solid" color="medical">
-            <ion-icon slot="start" name="calendar"></ion-icon>
-            Prendre rendez-vous
-          </ion-button>
-        </div>
-      </ion-card>
-    </div>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="doctors.length === 0">
-    <ion-icon name="search-outline"></ion-icon>
-    <h3>Aucun médecin trouvé</h3>
-    <p>Essayez de modifier vos critères de recherche</p>
-    <ion-button fill="solid" color="medical" (click)="resetFilter()">
-      Réinitialiser la recherche
-    </ion-button>
-  </div>
-
-  <!-- Floating Action Button pour les utilisateurs connectés -->
+  <!-- Bouton d'action flottant pour les utilisateurs connectés -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isLoggedIn">
-    <ion-fab-button color="medical" routerLink="/appointments">
-      <ion-icon name="calendar"></ion-icon>
+    <ion-fab-button routerLink="/appointments">
+      <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>
 
 <ion-footer class="ion-no-border">
-  <ion-toolbar color="soft">
+  <ion-toolbar>
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="home" selected>
@@ -157,7 +175,7 @@
         </ion-tab-button>
         <ion-tab-button tab="notifications" routerLink="/notifications">
           <ion-icon name="notifications-outline"></ion-icon>
-          <ion-label>Notifications</ion-label>
+          <ion-label>Alertes</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="messaging" routerLink="/messaging">
           <ion-icon name="chatbubble-outline"></ion-icon>

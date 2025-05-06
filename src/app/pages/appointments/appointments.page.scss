@@ -1,34 +1,352 @@
+// Personnalisation de l'en-tête
+.custom-header {
+  ion-toolbar {
+    --background: rgba(247, 249, 252, 0.85);
+    --border-color: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 5px 0;
+    
+    &::after {
+      display: none;
+    }
+    
+    ion-title {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--ion-text-color);
+    }
+  }
+  
+  .custom-back-button {
+    --color: var(--ion-color-primary);
+    --icon-font-size: 18px;
+    --padding-start: 8px;
+  }
+  
+  .notification-btn {
+    --background: var(--ion-color-light);
+    --border-radius: 50%;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 42px;
+    width: 42px;
+    margin-right: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
 ion-content {
-    --background: #f5f7fa;
+  --background: var(--ion-background-color);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  
+  p {
+    margin-top: 16px;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+.loading-spinner {
+  display: block;
+  margin: 0 auto;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
+  border-radius: 12px;
+  margin: 16px 0;
+  
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
   }
   
-  .loading-spinner {
-    display: block;
-    margin: 20px auto;
+  ion-text {
+    text-align: center;
+    font-weight: 500;
+  }
+}
+
+.filter-tabs {
+  display: flex;
+  overflow-x: auto;
+  margin: 0 -16px 16px -16px;
+  padding: 0 16px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
   
-  .appointment-card {
-    --background: #ffffff;
-    --border-radius: 10px;
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    transition: transform 0.2s;
-    &:hover {
-      transform: translateY(-5px);
+  .filter-tab {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    margin-right: 8px;
+    background-color: var(--ion-color-card-bg);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    &.active {
+      background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(var(--ion-color-primary-rgb), 0.3);
     }
-    ion-label {
-      h2 {
-        color: #333;
-        font-size: 1.2rem;
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+  
+  .stat-card {
+    background-color: var(--ion-color-card-bg);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      
+      ion-icon {
+        color: white;
+        font-size: 20px;
       }
+    }
+    
+    .stat-info {
+      text-align: center;
+      
+      h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--ion-text-color);
+      }
+      
       p {
-        color: #666;
-        font-size: 0.9rem;
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  margin-bottom: 16px;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.appointment-card {
+  background-color: var(--ion-color-card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &.status-accepted {
+    border-left: 4px solid var(--ion-color-primary);
+  }
+  
+  &.status-completed {
+    border-left: 4px solid var(--ion-color-success);
+  }
+  
+  &.status-pending {
+    border-left: 4px solid var(--ion-color-warning);
+  }
+  
+  &.status-rejected {
+    border-left: 4px solid var(--ion-color-danger);
+  }
+  
+  .appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: rgba(var(--ion-color-light-rgb), 0.5);
+    
+    .appointment-date {
+      display: flex;
+      align-items: center;
+      
+      .date-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+        color: white;
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-right: 12px;
+        
+        .day {
+          font-size: 18px;
+          font-weight: 700;
+          line-height: 1;
+        }
+        
+        .month {
+          font-size: 12px;
+          text-transform: uppercase;
+          opacity: 0.8;
+        }
+      }
+      
+      .time {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ion-text-color);
+      }
+    }
+    
+    .appointment-status {
+      ion-badge {
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 12px;
       }
     }
   }
   
-  ion-button {
-    --border-radius: 8px;
-    margin-top: 20px;
+  .appointment-content {
+    padding: 16px;
+    
+    .doctor-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      .avatar-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background-color: var(--ion-color-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        
+        ion-icon {
+          font-size: 24px;
+          color: var(--ion-color-medium);
+        }
+      }
+      
+      .doctor-details {
+        h3 {
+          margin: 0 0 4px;
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--ion-text-color);
+        }
+        
+        .specialty {
+          margin: 0;
+          font-size: 14px;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+    
+    .appointment-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      
+      ion-button {
+        --padding-start: 12px;
+        --padding-end: 12px;
+        height: 36px;
+        font-size: 13px;
+        font-weight: 500;
+        --border-radius: 10px;
+        --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+    }
   }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: rgba(var(--ion-color-light-rgb), 0.5);
+  border-radius: 16px;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 48px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-text-color);
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    max-width: 240px;
+  }
+}

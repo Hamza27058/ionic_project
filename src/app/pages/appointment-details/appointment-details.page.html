@@ -1,7 +1,7 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="light">
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/notifications" (click)="goBack()"></ion-back-button>
+      <ion-back-button defaultHref="/notifications" class="custom-back-button"></ion-back-button>
     </ion-buttons>
     <ion-title>Détails du rendez-vous</ion-title>
   </ion-toolbar>
@@ -10,14 +10,14 @@
 <ion-content>
   <div class="appointment-container">
     <div *ngIf="isLoading" class="loading-container">
-      <ion-spinner name="crescent" color="medical"></ion-spinner>
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Chargement des détails...</p>
     </div>
 
     <div *ngIf="!isLoading && errorMessage" class="error-container">
       <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
       <p>{{ errorMessage }}</p>
-      <ion-button fill="outline" color="medical" (click)="goBack()">
+      <ion-button fill="outline" color="primary" (click)="goBack()" class="custom-button">
         <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
         Retour
       </ion-button>
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Carte principale -->
-      <ion-card>
+      <ion-card class="main-card">
         <ion-card-content>
           <!-- Informations du contact -->
           <div class="contact-info">

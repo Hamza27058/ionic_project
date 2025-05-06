@@ -1,5 +1,38 @@
+// Personnalisation de l'en-tête
+.custom-header {
+  ion-toolbar {
+    --background: rgba(247, 249, 252, 0.85);
+    --border-color: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 5px 0;
+    
+    &::after {
+      display: none;
+    }
+    
+    ion-title {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--ion-text-color);
+    }
+  }
+  
+  .custom-back-button {
+    --color: var(--ion-color-primary);
+    --icon-font-size: 18px;
+    --padding-start: 8px;
+  }
+}
+
+ion-content {
+  --background: var(--ion-background-color);
+}
+
 .appointment-container {
-  padding: 16px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .loading-container {
@@ -7,15 +40,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 0;
+  padding: 60px 0;
   
   ion-spinner {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    --color: var(--ion-color-primary);
   }
   
   p {
-    color: var(--text-secondary);
+    color: var(--ion-color-medium);
     font-size: 16px;
+    font-weight: 500;
   }
 }
 
@@ -24,93 +59,135 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 0;
+  padding: 60px 0;
   text-align: center;
   
   ion-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    font-size: 56px;
+    margin-bottom: 20px;
   }
   
   p {
-    color: var(--text-secondary);
+    color: var(--ion-color-medium);
     font-size: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    max-width: 320px;
+    line-height: 1.5;
+  }
+  
+  .custom-button {
+    --border-radius: 12px;
+    height: 44px;
+    font-weight: 600;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
 }
 
 .status-header {
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   
   ion-badge {
     font-size: 14px;
-    padding: 8px 16px;
-    border-radius: 20px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+}
+
+.appointment-details {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.main-card {
+  margin: 0;
+  border-radius: var(--ion-border-radius);
+  box-shadow: var(--ion-box-shadow);
+  overflow: hidden;
+  background: var(--ion-color-card-bg);
+}
+
+ion-card-content {
+  padding: 24px;
 }
 
 .contact-info {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   
   ion-avatar {
-    width: 64px;
-    height: 64px;
-    margin-right: 16px;
-    border: 2px solid var(--ion-color-light-shade);
+    width: 72px;
+    height: 72px;
+    margin-right: 20px;
+    border: 3px solid var(--ion-color-light-shade);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .contact-details {
     h2 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0 0 4px;
-      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: var(--ion-text-color);
+      letter-spacing: -0.01em;
     }
     
     p {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      color: var(--text-secondary);
+      gap: 8px;
+      font-size: 15px;
+      color: var(--ion-color-primary);
       margin: 0;
+      font-weight: 500;
       
       ion-icon {
-        font-size: 16px;
-        color: var(--ion-color-medical);
+        font-size: 18px;
       }
     }
   }
 }
 
 .appointment-info {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  background-color: var(--ion-color-light);
+  border-radius: var(--ion-border-radius);
+  padding: 16px;
   
   ion-item {
     --padding-start: 0;
     --inner-padding-end: 0;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+    --background: transparent;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
     
     ion-icon {
-      font-size: 20px;
+      font-size: 22px;
       margin-right: 16px;
+      color: var(--ion-color-primary);
     }
     
     ion-label {
       h3 {
         font-size: 14px;
-        font-weight: 500;
-        color: var(--text-secondary);
-        margin-bottom: 4px;
+        font-weight: 600;
+        color: var(--ion-color-medium);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       
       p {
         font-size: 16px;
-        color: var(--text-primary);
+        color: var(--ion-text-color);
+        font-weight: 500;
+        line-height: 1.4;
       }
     }
   }
@@ -120,11 +197,95 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  
+  .action-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-medium);
+    margin-bottom: 8px;
+  }
+  
+  ion-button {
+    margin: 0;
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    
+    &.accept-btn {
+      --background: var(--ion-color-success);
+      --color: white;
+    }
+    
+    &.reject-btn {
+      --background: var(--ion-color-danger);
+      --color: white;
+    }
+    
+    &.cancel-btn {
+      --background: var(--ion-color-light);
+      --color: var(--ion-color-danger);
+    }
+    
+    &.reschedule-btn {
+      --background: var(--ion-color-light);
+      --color: var(--ion-color-primary);
+    }
+    
+    ion-icon {
+      font-size: 18px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.notes-section {
+  margin-top: 24px;
+  
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-medium);
+    margin-bottom: 12px;
+  }
+  
+  .notes-content {
+    background-color: var(--ion-color-light);
+    border-radius: var(--ion-border-radius);
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ion-text-color);
+    min-height: 100px;
+  }
+  
+  .empty-notes {
+    color: var(--ion-color-medium);
+    font-style: italic;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 768px) {
   .appointment-container {
-    max-width: 600px;
-    margin: 0 auto;
+    padding: 32px;
+  }
+  
+  .appointment-actions {
+    flex-direction: row;
+    
+    ion-button {
+      flex: 1;
+    }
   }
 }

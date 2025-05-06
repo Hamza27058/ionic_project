@@ -36,6 +36,9 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
+// Import des styles personnalisés
+@import './theme/custom.scss';
+
 // Classes pour les couleurs personnalisées
 .ion-color-accept {
   --ion-color-base: var(--ion-color-accept);
