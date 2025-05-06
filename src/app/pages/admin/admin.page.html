@@ -1,0 +1,170 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Panneau d'administration</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Section des statistiques -->
+  <div class="stats-container">
+    <ion-card class="stats-card">
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">{{ stats.totalUsers }}</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ stats.totalDoctors }}</div>
+            <div class="stat-label">Médecins</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ stats.totalClients }}</div>
+            <div class="stat-label">Clients</div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Menu d'actions administrateur -->
+  <ion-card class="admin-actions-card">
+    <ion-card-content>
+      <div class="admin-actions">
+        <ion-button expand="block" (click)="logout()" color="danger" fill="outline">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Déconnexion
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Segment pour changer entre les docteurs et les utilisateurs -->
+  <ion-segment [(ngModel)]="selectedTab" (ionChange)="segmentChanged($event)" color="primary">
+    <ion-segment-button value="doctors">
+      <ion-label>Médecins</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="users">
+      <ion-label>Utilisateurs</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Section des docteurs -->
+  <div *ngIf="selectedTab === 'doctors'">
+    <div class="header-actions">
+      <h2>Liste des médecins</h2>
+      <ion-button (click)="toggleAddDoctorForm()" color="primary" fill="outline">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        {{ showAddDoctorForm ? 'Annuler' : 'Ajouter un médecin' }}
+      </ion-button>
+    </div>
+
+    <!-- Formulaire d'ajout de médecin -->
+    <ion-card *ngIf="showAddDoctorForm" class="add-form-card">
+      <ion-card-header>
+        <ion-card-title>Ajouter un nouveau médecin</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Nom</ion-label>
+          <ion-input [(ngModel)]="newDoctor.name" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Prénom</ion-label>
+          <ion-input [(ngModel)]="newDoctor.surname" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="newDoctor.email" type="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Mot de passe</ion-label>
+          <ion-input [(ngModel)]="newDoctor.password" type="password" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Spécialité</ion-label>
+          <ion-input [(ngModel)]="newDoctor.specialty" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Ville</ion-label>
+          <ion-input [(ngModel)]="newDoctor.city" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">URL de la photo (optionnel)</ion-label>
+          <ion-input [(ngModel)]="newDoctor.photo"></ion-input>
+        </ion-item>
+        <div class="form-actions">
+          <ion-button expand="block" (click)="addDoctor()" color="primary">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Enregistrer
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Liste des médecins -->
+    <ion-list *ngIf="doctors.length > 0">
+      <ion-item-sliding *ngFor="let doctor of doctors">
+        <ion-item>
+          <ion-avatar slot="start">
+            <img [src]="doctor.photo || 'assets/default-avatar.png'" alt="Photo du médecin">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ doctor.name }} {{ doctor.surname }}</h2>
+            <p>{{ doctor.specialty }} - {{ doctor.city }}</p>
+          </ion-label>
+          <ion-badge color="tertiary" slot="end">Médecin</ion-badge>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="confirmDeleteUser(doctor)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="primary" (click)="editUser(doctor)">
+            <ion-icon slot="icon-only" name="create"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <ion-item *ngIf="doctors.length === 0" lines="none">
+        <ion-label class="ion-text-center">Aucun médecin trouvé</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Section des utilisateurs -->
+  <div *ngIf="selectedTab === 'users'">
+    <h2>Liste des utilisateurs</h2>
+    <ion-list *ngIf="users.length > 0">
+      <ion-item-sliding *ngFor="let user of users">
+        <ion-item>
+          <ion-avatar slot="start">
+            <img [src]="user.photo || 'assets/default-avatar.png'" alt="Photo de l'utilisateur">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ user.name }} {{ user.surname }}</h2>
+            <p>{{ user.email }}</p>
+          </ion-label>
+          <ion-badge [color]="getRoleColor(user.role)" slot="end">{{ getUserRoleLabel(user.role) }}</ion-badge>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="confirmDeleteUser(user)" *ngIf="user.role !== 'admin'">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="primary" (click)="editUser(user)">
+            <ion-icon slot="icon-only" name="create"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      <ion-item *ngIf="users.length === 0" lines="none">
+        <ion-label class="ion-text-center">Aucun utilisateur trouvé</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

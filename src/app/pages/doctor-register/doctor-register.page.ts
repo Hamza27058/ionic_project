@@ -95,6 +95,6 @@ export class DoctorRegisterPage {
         });
         await alert.present();
       },
-    });
-  }
+    });
+  }
 }

@@ -1,0 +1,112 @@
+// Styles pour la page d'administration
+
+// Conteneur des statistiques
+.stats-container {
+  margin-bottom: 20px;
+}
+
+.stats-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+}
+
+// En-tête avec actions
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 10px;
+}
+
+// Formulaire d'ajout
+.add-form-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions {
+  margin-top: 20px;
+}
+
+// Badges et listes
+ion-badge {
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+ion-item {
+  --border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+ion-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+// Animations et transitions
+ion-item-sliding {
+  transition: all 0.3s ease;
+}
+
+ion-segment {
+  margin-bottom: 16px;
+}
+
+// Style pour les titres
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin-bottom: 16px;
+}
+
+// Styles pour le menu d'actions administrateur
+.admin-actions-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// Animation pour le bouton de déconnexion
+ion-button[color="danger"] {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    --background: var(--ion-color-danger);
+    --color: white;
+  }
+}

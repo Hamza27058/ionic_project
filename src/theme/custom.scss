@@ -1,0 +1,355 @@
+/**
+ * Styles personnalisés inspirés de l'application Health Tracker
+ * Ce fichier contient des styles globaux qui s'appliquent à toute l'application
+ */
+
+// Styles généraux de l'application
+ion-content {
+  --background: var(--app-background);
+  font-family: var(--font-family);
+}
+
+// Styles des en-têtes
+ion-header {
+  ion-toolbar {
+    --background: var(--app-background);
+    --border-width: 0;
+    --min-height: 60px;
+    
+    ion-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    ion-back-button {
+      --color: var(--ion-color-medical);
+    }
+  }
+}
+
+// Styles des cartes
+ion-card {
+  border-radius: var(--border-radius);
+  margin: 16px 0;
+  box-shadow: var(--card-shadow);
+  background: #FFFFFF;
+  overflow: hidden;
+  
+  ion-card-header {
+    padding: 20px;
+    
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    ion-card-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+  }
+  
+  ion-card-content {
+    padding: 20px;
+  }
+}
+
+// Carte de statistiques (comme dans Health Tracker)
+.stat-card {
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-accent));
+  color: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+  
+  .stat-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  
+  .stat-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+}
+
+// Cartes de métriques (comme dans Health Tracker)
+.metric-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    
+    &.running {
+      background-color: #2D3250;
+    }
+    
+    &.calories {
+      background-color: #FFECDB;
+      
+      ion-icon {
+        color: #FF9F43;
+      }
+    }
+    
+    &.cycling {
+      background-color: #FFE2E4;
+      
+      ion-icon {
+        color: #FF4757;
+      }
+    }
+    
+    &.sleeping {
+      background-color: #E4ECFF;
+      
+      ion-icon {
+        color: #3F8CFF;
+      }
+    }
+    
+    ion-icon {
+      font-size: 20px;
+      color: white;
+    }
+  }
+  
+  .metric-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .metric-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  
+  .metric-unit {
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+}
+
+// Grille de métriques
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+// Styles des boutons
+ion-button {
+  --border-radius: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  height: 52px;
+  --box-shadow: 0 8px 16px rgba(108, 92, 231, 0.2);
+  
+  &.button-solid {
+    --background: var(--ion-color-primary);
+    --color: white;
+  }
+  
+  &.button-outline {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
+}
+
+// Bouton d'action flottant
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --box-shadow: 0 8px 16px rgba(108, 92, 231, 0.3);
+}
+
+// Styles des listes
+ion-list {
+  background: transparent;
+  padding: 0;
+  
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --background: #FFFFFF;
+    --border-color: rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+    border-radius: 16px;
+    --ripple-color: rgba(0, 0, 0, 0.05);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    ion-label {
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+      
+      h3 {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      
+      p {
+        font-size: 14px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+      }
+    }
+  }
+}
+
+// Styles des badges
+ion-badge {
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+// Styles des formulaires
+ion-item.form-item {
+  --background: #F8F9FE;
+  --border-color: #E4E7F2;
+  --border-width: 1px;
+  --border-radius: 16px;
+  --padding-start: 16px;
+  margin-bottom: 16px;
+  
+  ion-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  
+  ion-input, ion-textarea, ion-select {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-size: 16px;
+    --placeholder-color: var(--text-tertiary);
+    --placeholder-opacity: 0.8;
+  }
+}
+
+// En-tête de bienvenue (comme dans Health Tracker)
+.welcome-header {
+  padding: 20px 20px 10px;
+  
+  .greeting {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  
+  .user-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+}
+
+// Animations et transitions
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Styles d'ombres et d'élévation
+.elevation-1 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.elevation-2 {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.elevation-3 {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+// Classes d'espacement
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.p-0 { padding: 0; }
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+
+// Classes de typographie
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-medical { color: var(--ion-color-medical); }
+.text-success { color: var(--ion-color-success); }
+.text-danger { color: var(--ion-color-danger); }
+.text-warning { color: var(--ion-color-warning); }
+
+.text-bold { font-weight: 700; }
+.text-medium { font-weight: 500; }
+.text-normal { font-weight: 400; }
+
+.text-small { font-size: 12px; }
+.text-base { font-size: 14px; }
+.text-large { font-size: 16px; }
+.text-xl { font-size: 18px; }
+.text-2xl { font-size: 20px; }
+.text-3xl { font-size: 24px; }
+
+// Classes d'alignement et de flexbox
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.gap-1 { gap: 8px; }
+.gap-2 { gap: 16px; }
+.gap-3 { gap: 24px; }
