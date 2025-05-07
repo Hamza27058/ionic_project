@@ -1,0 +1,13 @@
+ion-list {
+    padding: 10px;
+  }
+  
+  ion-item {
+    --border-radius: 8px;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease;
+  
+    &:hover {
+      --background: var(--ion-color-light);
+    }
+  }

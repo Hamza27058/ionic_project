@@ -1,0 +1,130 @@
+.appointment-container {
+  padding: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+.status-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  
+  ion-badge {
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 20px;
+  }
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  ion-avatar {
+    width: 64px;
+    height: 64px;
+    margin-right: 16px;
+    border: 2px solid var(--ion-color-light-shade);
+  }
+  
+  .contact-details {
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--text-primary);
+    }
+    
+    p {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+      
+      ion-icon {
+        font-size: 16px;
+        color: var(--ion-color-medical);
+      }
+    }
+  }
+}
+
+.appointment-info {
+  margin-bottom: 24px;
+  
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 8px;
+    
+    ion-icon {
+      font-size: 20px;
+      margin-right: 16px;
+    }
+    
+    ion-label {
+      h3 {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+      
+      p {
+        font-size: 16px;
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+.appointment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .appointment-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

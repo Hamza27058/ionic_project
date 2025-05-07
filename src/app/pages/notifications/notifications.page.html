@@ -1,0 +1,97 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notifications</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="notifications-container">
+    <div *ngIf="isLoading" class="loading-container">
+      <ion-spinner name="crescent" color="medical"></ion-spinner>
+      <p>Chargement des notifications...</p>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="error-container">
+      <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+      <p>{{ errorMessage }}</p>
+      <ion-button fill="outline" color="medical" (click)="loadNotifications()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Réessayer
+      </ion-button>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage">
+      <!-- Notifications récentes -->
+      <div class="section-header">
+        <h2>Vos notifications</h2>
+        <ion-button *ngIf="notifications.length > 0" fill="clear" color="medical" size="small" (click)="markAllAsRead()">
+          <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+          Tout marquer comme lu
+        </ion-button>
+      </div>
+
+      <div *ngIf="notifications.length === 0" class="empty-state">
+        <ion-icon name="notifications-outline" color="medium"></ion-icon>
+        <h3>Aucune notification</h3>
+        <p>Vous n'avez pas de nouvelles notifications pour le moment</p>
+      </div>
+
+      <ion-card *ngFor="let notification of notifications; trackBy: trackById" class="notification-card" [ngClass]="{'unread': !notification.read}">
+        <ion-card-content>
+          <div class="notification-header">
+            <ion-icon [name]="getNotificationIcon(notification.type)" [color]="getNotificationColor(notification.type)"></ion-icon>
+            <div class="notification-info">
+              <h3>{{ notification.message }}</h3>
+              <p class="notification-time">{{ notification.created_at | date:'short' }}</p>
+            </div>
+          </div>
+          <div *ngIf="notification.action" class="notification-actions">
+            <ion-button fill="clear" color="medical" size="small" (click)="handleNotificationAction(notification)">
+              <ion-icon slot="start" name="arrow-forward-outline"></ion-icon>
+              Voir détails
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Rendez-vous confirmés -->
+      <div *ngIf="acceptedAppointments.length > 0" class="section-header">
+        <h2>Rendez-vous confirmés</h2>
+      </div>
+
+      <ion-card *ngFor="let appointment of acceptedAppointments; trackBy: trackById" class="appointment-card confirmed">
+        <ion-card-content>
+          <div class="appointment-header">
+            <ion-avatar>
+              <img [src]="userType === 'doctor' ? (appointment.user_photo ? 'http://localhost:5000' + appointment.user_photo : 'assets/default-avatar.png') : (appointment.doctor_photo ? 'http://localhost:5000' + appointment.doctor_photo : 'assets/default-avatar.png')" alt="{{ userType === 'doctor' ? appointment.user_name : appointment.doctor_name }}">
+            </ion-avatar>
+            <div class="appointment-info">
+              <h3>{{ userType === 'doctor' ? appointment.user_name : appointment.doctor_name }}</h3>
+              <p class="appointment-date">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ appointment.date | date:'dd/MM/yyyy' }} à {{ appointment.time }}
+              </p>
+              <p class="appointment-status">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                Confirmé
+              </p>
+            </div>
+          </div>
+          <div class="appointment-actions">
+            <ion-button color="medical" (click)="goToMessaging(appointment)">
+              <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+              Contacter
+            </ion-button>
+            <ion-button fill="outline" color="medical" (click)="viewAppointmentDetails(appointment)">
+              <ion-icon slot="start" name="eye-outline"></ion-icon>
+              Détails
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

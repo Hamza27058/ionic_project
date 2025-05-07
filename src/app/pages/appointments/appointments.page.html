@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Rendez-vous</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" id="main-content">
+  @if (isLoading) {
+    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+  }
+
+  @if (!isLoading) {
+    @if (errorMessage) {
+      <ion-text color="danger">{{ errorMessage }}</ion-text>
+    }
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Vos rendez-vous</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          @for (appointment of appointments; track appointment._id) {
+            <ion-item>
+              <ion-label>
+                @if (appointment.doctor_name) {
+                  <h3>Médecin: {{ appointment.doctor_name }}</h3>
+                } @else {
+                  <h3>Patient: {{ appointment.user_name }}</h3>
+                }
+                <p>Date: {{ appointment.date | date:'short' }}</p>
+                <!-- Affichage amélioré du statut avec couleurs et icônes -->
+                <p>
+                  <ion-badge [color]="appointment.status === 'pending' ? 'warning' : (appointment.status === 'accepted' ? 'success' : 'danger')">
+                    <ion-icon [name]="appointment.status === 'pending' ? 'time' : (appointment.status === 'accepted' ? 'checkmark-circle' : 'close-circle')"></ion-icon>
+                    {{ appointment.status === 'pending' ? 'En attente' : (appointment.status === 'accepted' ? 'Accepté' : 'Refusé') }}
+                  </ion-badge>
+                </p>
+              </ion-label>
+              @if (appointment.status === 'pending') {
+                <ion-buttons slot="end">
+                  <ion-button (click)="acceptAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="checkmark-circle" color="success"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="rejectAppointment(appointment._id)">
+                    <ion-icon slot="icon-only" name="close-circle" color="danger"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              }
+            </ion-item>
+          }
+          @if (!appointments.length) {
+            <ion-item>
+              <ion-label>Aucun rendez-vous trouvé</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

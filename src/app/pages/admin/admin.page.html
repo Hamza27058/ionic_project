@@ -1,0 +1,185 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Tableau de bord Admin</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="editProfile()">
+        <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+        Profil
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Déconnexion
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <ion-toolbar color="light">
+    <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="doctors">
+        <ion-label>Médecins</ion-label>
+        <ion-icon name="medkit-outline"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="clients">
+        <ion-label>Clients</ion-label>
+        <ion-icon name="people-outline"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="add-doctor">
+        <ion-label>Ajouter Médecin</ion-label>
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Affichage du chargement -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Chargement en cours...</p>
+  </div>
+  
+  <!-- Message d'erreur -->
+  <ion-item *ngIf="errorMessage && !isLoading" color="danger">
+    <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+    <ion-label>{{ errorMessage }}</ion-label>
+  </ion-item>
+  
+  <!-- Section Médecins -->
+  <div *ngIf="segment === 'doctors' && !isLoading">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Liste des Médecins</ion-card-title>
+        <ion-card-subtitle>{{ doctors.length }} médecins enregistrés</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let doctor of doctors">
+            <ion-avatar slot="start">
+              <img [src]="doctor.photo ? 'http://localhost:5000' + doctor.photo : 'assets/default-avatar.png'" alt="{{ doctor.name }}">
+            </ion-avatar>
+            <ion-label>
+              <h2>Dr. {{ doctor.name }} {{ doctor.surname }}</h2>
+              <p>{{ doctor.specialty }} - {{ doctor.city }}</p>
+              <p>{{ doctor.email }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="danger" (click)="deleteUser(doctor._id, true)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          
+          <ion-item *ngIf="doctors.length === 0">
+            <ion-label class="ion-text-center">
+              Aucun médecin trouvé
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  
+  <!-- Section Clients -->
+  <div *ngIf="segment === 'clients' && !isLoading">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Liste des Clients</ion-card-title>
+        <ion-card-subtitle>{{ users.length }} clients enregistrés</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let user of users">
+            <ion-avatar slot="start">
+              <img [src]="user.photo ? 'http://localhost:5000' + user.photo : 'assets/default-avatar.png'" alt="{{ user.name }}">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ user.name }} {{ user.surname }}</h2>
+              <p>{{ user.email }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="danger" (click)="deleteUser(user._id)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          
+          <ion-item *ngIf="users.length === 0">
+            <ion-label class="ion-text-center">
+              Aucun client trouvé
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  
+  <!-- Section Ajouter Médecin -->
+  <div *ngIf="segment === 'add-doctor' && !isLoading">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Ajouter un nouveau médecin</ion-card-title>
+        <ion-card-subtitle>Tous les champs marqués d'un * sont obligatoires</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <form (ngSubmit)="addDoctor()">
+          <!-- Champs obligatoires -->
+          <ion-item>
+            <ion-label position="floating">Prénom *</ion-label>
+            <ion-input [(ngModel)]="newDoctor.name" name="name" required></ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Nom *</ion-label>
+            <ion-input [(ngModel)]="newDoctor.surname" name="surname" required></ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Email *</ion-label>
+            <ion-input [(ngModel)]="newDoctor.email" name="email" type="email" required></ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Mot de passe *</ion-label>
+            <ion-input [(ngModel)]="newDoctor.password" name="password" type="password" required></ion-input>
+          </ion-item>
+          
+          <!-- Champs optionnels -->
+          <ion-item-divider>
+            <ion-label>Informations professionnelles</ion-label>
+          </ion-item-divider>
+          
+          <ion-item>
+            <ion-label position="floating">Spécialité</ion-label>
+            <ion-input [(ngModel)]="newDoctor.specialty" name="specialty" type="text" placeholder="Généraliste"></ion-input>
+          </ion-item>
+          
+          <!-- Aide pour la spécialité -->
+          <ion-item lines="none">
+            <ion-note color="medium">Exemples: Cardiologie, Pédiatrie, Dermatologie, Neurologie, Ophtalmologie, Dentiste, Psychiatrie, Orthopédie</ion-note>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Ville</ion-label>
+            <ion-input [(ngModel)]="newDoctor.city" name="city" placeholder="Non spécifiée"></ion-input>
+          </ion-item>
+          
+          <div class="ion-padding-top">
+            <ion-button expand="block" type="submit" color="primary">
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              Ajouter le médecin
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-title size="small" class="ion-text-center">MediConnect - Administration</ion-title>
+  </ion-toolbar>
+</ion-footer>

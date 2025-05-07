@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Choisir le type d'inscription</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Annuler</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item button (click)="selectRole('client')">
+      <ion-icon name="person-outline" slot="start"></ion-icon>
+      <ion-label>Inscription en tant que Client</ion-label>
+    </ion-item>
+    <ion-item button (click)="selectRole('doctor')">
+      <ion-icon name="medical-outline" slot="start"></ion-icon>
+      <ion-label>Inscription en tant que Médecin</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

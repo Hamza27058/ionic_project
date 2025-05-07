@@ -1,0 +1,102 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/notifications" (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Détails du rendez-vous</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="appointment-container">
+    <div *ngIf="isLoading" class="loading-container">
+      <ion-spinner name="crescent" color="medical"></ion-spinner>
+      <p>Chargement des détails...</p>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="error-container">
+      <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+      <p>{{ errorMessage }}</p>
+      <ion-button fill="outline" color="medical" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Retour
+      </ion-button>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && appointment" class="appointment-details">
+      <!-- En-tête avec statut -->
+      <div class="status-header">
+        <ion-badge [color]="getAppointmentStatusColor(appointment.status)">
+          {{ getAppointmentStatusText(appointment.status) }}
+        </ion-badge>
+      </div>
+
+      <!-- Carte principale -->
+      <ion-card>
+        <ion-card-content>
+          <!-- Informations du contact -->
+          <div class="contact-info">
+            <ion-avatar>
+              <img [src]="userType === 'doctor' ? (appointment.user_photo ? 'http://localhost:5000' + appointment.user_photo : 'assets/default-avatar.png') : (appointment.doctor_photo ? 'http://localhost:5000' + appointment.doctor_photo : 'assets/default-avatar.png')" alt="Photo de profil">
+            </ion-avatar>
+            <div class="contact-details">
+              <h2>{{ userType === 'doctor' ? appointment.user_name : appointment.doctor_name }}</h2>
+              <p *ngIf="userType === 'client' && appointment.doctor_specialty">
+                <ion-icon name="medical-outline"></ion-icon>
+                {{ appointment.doctor_specialty }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Détails du rendez-vous -->
+          <div class="appointment-info">
+            <ion-item lines="none">
+              <ion-icon name="calendar-outline" slot="start" color="medical"></ion-icon>
+              <ion-label>
+                <h3>Date et heure</h3>
+                <p>{{ appointment.date | date:'fullDate' }} à {{ appointment.time }}</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item lines="none" *ngIf="appointment.reason">
+              <ion-icon name="information-circle-outline" slot="start" color="medical"></ion-icon>
+              <ion-label>
+                <h3>Motif de consultation</h3>
+                <p>{{ appointment.reason }}</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item lines="none" *ngIf="appointment.notes">
+              <ion-icon name="document-text-outline" slot="start" color="medical"></ion-icon>
+              <ion-label>
+                <h3>Notes</h3>
+                <p>{{ appointment.notes }}</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-icon name="time-outline" slot="start" color="medical"></ion-icon>
+              <ion-label>
+                <h3>Créé le</h3>
+                <p>{{ appointment.created_at | date:'medium' }}</p>
+              </ion-label>
+            </ion-item>
+          </div>
+
+          <!-- Actions -->
+          <div class="appointment-actions">
+            <ion-button expand="block" color="medical" (click)="goToMessaging()" *ngIf="appointment.status === 'accepted'">
+              <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+              Contacter
+            </ion-button>
+            
+            <ion-button expand="block" fill="outline" color="danger" (click)="cancelAppointment()" *ngIf="appointment.status === 'accepted' || appointment.status === 'pending'">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              {{ appointment.status === 'pending' && userType === 'doctor' ? 'Refuser' : 'Annuler' }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

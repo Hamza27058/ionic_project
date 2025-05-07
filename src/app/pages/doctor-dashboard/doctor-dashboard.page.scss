@@ -1,0 +1,255 @@
+ion-card {
+  max-width: 600px;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+ion-item {
+  --border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+ion-avatar img {
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+}
+
+ion-button {
+  margin-top: 10px;
+}
+
+.loading-spinner {
+  display: block;
+  margin: 20px auto;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+  color: var(--ion-color-medium);
+}
+
+.loading-container ion-spinner {
+  margin-bottom: 1rem;
+}
+
+/* Style pour le résumé du tableau de bord */
+.dashboard-summary {
+  margin-bottom: 1rem;
+}
+
+.summary-card {
+  margin: 0;
+  height: 100%;
+}
+
+.summary-card ion-card-content {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 1rem;
+  background-color: var(--ion-color-primary-tint);
+}
+
+.card-icon ion-icon {
+  font-size: 1.8rem;
+  color: var(--ion-color-primary);
+}
+
+.card-info h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ion-color-dark);
+}
+
+.card-info p {
+  margin: 0;
+  color: var(--ion-color-medium);
+}
+
+/* Style pour les onglets */
+ion-segment {
+  margin-bottom: 1rem;
+}
+
+/* Style pour les en-têtes de carte */
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Style pour les éléments de rendez-vous */
+.appointment-item ion-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.appointment-item ion-label h3 {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.appointment-item ion-label p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.appointment-item ion-label p ion-icon {
+  margin-right: 0.5rem;
+}
+
+/* Style pour le profil */
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-header ion-avatar {
+  width: 80px;
+  height: 80px;
+  margin-right: 1rem;
+}
+
+.profile-info h2 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+}
+
+.profile-info p {
+  margin: 0;
+  color: var(--ion-color-medium);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-actions ion-button {
+  --border-radius: 20px;
+  font-size: 12px;
+}
+
+.button-container {
+  margin-top: 1.5rem;
+}
+
+/* Style pour les messages */
+.selected-contact {
+  --background: var(--ion-color-light);
+}
+
+.message-container {
+  margin-top: 1rem;
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.message-header {
+  background-color: var(--ion-color-light);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.message-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.messages-list {
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+}
+
+.no-messages {
+  text-align: center;
+  color: var(--ion-color-medium);
+  padding: 2rem 0;
+}
+
+.message-item {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-sent {
+  align-items: flex-end;
+}
+
+.message-received {
+  align-items: flex-start;
+}
+
+.message-content {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.message-sent .message-content {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.message-received .message-content {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.message-content p {
+  margin: 0 0 0.5rem 0;
+  white-space: pre-wrap;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.message-input {
+  border-top: 1px solid var(--ion-color-light-shade);
+}
+
+.message-input ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.message-input ion-input {
+  --padding-start: 1rem;
+}

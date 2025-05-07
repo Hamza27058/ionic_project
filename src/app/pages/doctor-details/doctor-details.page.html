@@ -1,0 +1,369 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profil du médecin</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()">
+        <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : 'medium'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Doctor Profile Header -->
+  <div class="doctor-profile-header">
+    <div class="profile-background"></div>
+    <div class="profile-content">
+      <ion-avatar class="profile-avatar">
+        <img [src]="doctor?.profile_photo ? 'http://localhost:5000' + doctor?.profile_photo : 'assets/default-avatar.png'" alt="{{ doctor?.name }}">
+      </ion-avatar>
+      <div class="profile-info">
+        <h1>Dr. {{ doctor?.name }} {{ doctor?.surname }}</h1>
+        <p class="specialty">{{ doctor?.specialty }}</p>
+        <div class="rating-container">
+          <div class="rating">
+            <ion-icon name="star" color="warning"></ion-icon>
+            <span class="rating-value">{{ doctor?.rating || '4.8' }}</span>
+            <span class="rating-count">({{ doctor?.reviews || '24' }} avis)</span>
+          </div>
+          <ion-button fill="clear" size="small" (click)="showReviews()">
+            Voir les avis
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctor Details Content -->
+  <div class="doctor-details-content">
+    <!-- Segment Selector -->
+    <ion-segment [(ngModel)]="selectedSegment" mode="md" color="medical">
+      <ion-segment-button value="about">
+        <ion-label>À propos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="services">
+        <ion-label>Services</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="reviews">
+        <ion-label>Avis</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- About Section -->
+    <div *ngIf="selectedSegment === 'about'" class="segment-content">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Informations</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-item">
+            <ion-icon name="location-outline" color="medium"></ion-icon>
+            <div>
+              <h3>Adresse</h3>
+              <p>{{ doctor?.address || '123 Avenue de la Médecine, Paris' }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="call-outline" color="medium"></ion-icon>
+            <div>
+              <h3>Téléphone</h3>
+              <p>{{ doctor?.phone || '+33 1 23 45 67 89' }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="mail-outline" color="medium"></ion-icon>
+            <div>
+              <h3>Email</h3>
+              <p>{{ doctor?.email }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="time-outline" color="medium"></ion-icon>
+            <div>
+              <h3>Horaires</h3>
+              <p>Lundi - Vendredi: 9h00 - 18h00</p>
+              <p>Samedi: 9h00 - 12h00</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Biographie</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{ doctor?.bio || 'Dr. ' + doctor?.name + ' est un médecin expérimenté spécialisé en ' + doctor?.specialty + '. Avec plusieurs années d\'expérience, il/elle s\'engage à fournir des soins de qualité et personnalisés à tous ses patients.' }}</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Formation</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="education-item">
+            <div class="year">2010 - 2015</div>
+            <div class="details">
+              <h3>Doctorat en Médecine</h3>
+              <p>Université de Paris</p>
+            </div>
+          </div>
+          <div class="education-item">
+            <div class="year">2015 - 2018</div>
+            <div class="details">
+              <h3>Spécialisation en {{ doctor?.specialty }}</h3>
+              <p>Hôpital Universitaire de Paris</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Services Section -->
+    <div *ngIf="selectedSegment === 'services'" class="segment-content">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Services proposés</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="service-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div>
+              <h3>Consultation standard</h3>
+              <p>50€ - 30 minutes</p>
+            </div>
+          </div>
+          <div class="service-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div>
+              <h3>Consultation approfondie</h3>
+              <p>80€ - 45 minutes</p>
+            </div>
+          </div>
+          <div class="service-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div>
+              <h3>Suivi médical</h3>
+              <p>40€ - 20 minutes</p>
+            </div>
+          </div>
+          <div class="service-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div>
+              <h3>Téléconsultation</h3>
+              <p>45€ - 30 minutes</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Assurances acceptées</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="insurance-grid">
+            <div class="insurance-item">
+              <ion-icon name="shield-checkmark" color="medical"></ion-icon>
+              <span>CPAM</span>
+            </div>
+            <div class="insurance-item">
+              <ion-icon name="shield-checkmark" color="medical"></ion-icon>
+              <span>MGEN</span>
+            </div>
+            <div class="insurance-item">
+              <ion-icon name="shield-checkmark" color="medical"></ion-icon>
+              <span>Harmonie Mutuelle</span>
+            </div>
+            <div class="insurance-item">
+              <ion-icon name="shield-checkmark" color="medical"></ion-icon>
+              <span>Allianz</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Reviews Section -->
+    <div *ngIf="selectedSegment === 'reviews'" class="segment-content">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Évaluations et avis</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="rating-summary">
+            <div class="average-rating">
+              <div class="rating-number">{{ doctor?.rating || '4.8' }}</div>
+              <div class="rating-stars">
+                <ion-icon name="star" color="warning"></ion-icon>
+                <ion-icon name="star" color="warning"></ion-icon>
+                <ion-icon name="star" color="warning"></ion-icon>
+                <ion-icon name="star" color="warning"></ion-icon>
+                <ion-icon name="star-half" color="warning"></ion-icon>
+              </div>
+              <div class="rating-count">{{ doctor?.reviews || '24' }} avis</div>
+            </div>
+            <div class="rating-bars">
+              <div class="rating-bar-item">
+                <span>5</span>
+                <div class="bar-container">
+                  <div class="bar" style="width: 75%"></div>
+                </div>
+                <span>18</span>
+              </div>
+              <div class="rating-bar-item">
+                <span>4</span>
+                <div class="bar-container">
+                  <div class="bar" style="width: 15%"></div>
+                </div>
+                <span>4</span>
+              </div>
+              <div class="rating-bar-item">
+                <span>3</span>
+                <div class="bar-container">
+                  <div class="bar" style="width: 5%"></div>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="rating-bar-item">
+                <span>2</span>
+                <div class="bar-container">
+                  <div class="bar" style="width: 5%"></div>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="rating-bar-item">
+                <span>1</span>
+                <div class="bar-container">
+                  <div class="bar" style="width: 0%"></div>
+                </div>
+                <span>0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reviews-list">
+            <div class="review-item">
+              <div class="review-header">
+                <ion-avatar>
+                  <img src="assets/avatar-1.png" alt="Patient">
+                </ion-avatar>
+                <div class="review-info">
+                  <h3>Sophie Martin</h3>
+                  <div class="review-rating">
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                  </div>
+                  <span class="review-date">Il y a 2 jours</span>
+                </div>
+              </div>
+              <p class="review-content">Excellent médecin, très à l'écoute et professionnel. Je recommande vivement !</p>
+            </div>
+
+            <div class="review-item">
+              <div class="review-header">
+                <ion-avatar>
+                  <img src="assets/avatar-2.png" alt="Patient">
+                </ion-avatar>
+                <div class="review-info">
+                  <h3>Thomas Dubois</h3>
+                  <div class="review-rating">
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star-outline" color="warning"></ion-icon>
+                  </div>
+                  <span class="review-date">Il y a 1 semaine</span>
+                </div>
+              </div>
+              <p class="review-content">Très bon suivi médical, explications claires et rassurantes. Je suis très satisfait de ma consultation.</p>
+            </div>
+
+            <div class="review-item">
+              <div class="review-header">
+                <ion-avatar>
+                  <img src="assets/avatar-3.png" alt="Patient">
+                </ion-avatar>
+                <div class="review-info">
+                  <h3>Émilie Petit</h3>
+                  <div class="review-rating">
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star" color="warning"></ion-icon>
+                    <ion-icon name="star-half" color="warning"></ion-icon>
+                  </div>
+                  <span class="review-date">Il y a 2 semaines</span>
+                </div>
+              </div>
+              <p class="review-content">Médecin compétent et cabinet bien équipé. Prise en charge rapide et efficace.</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Appointment Booking Section -->
+  <div class="booking-section" *ngIf="isLoggedIn">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Prendre rendez-vous</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form (ngSubmit)="bookAppointment()">
+          <ion-item>
+            <ion-label position="floating">Date</ion-label>
+            <ion-datetime displayFormat="DD/MM/YYYY" min="{{ minDate }}" max="{{ maxDate }}" [(ngModel)]="appointmentDate" name="date"></ion-datetime>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Heure</ion-label>
+            <ion-select [(ngModel)]="appointmentTime" name="time">
+              <ion-select-option *ngFor="let time of availableTimes" [value]="time">{{ time }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="floating">Motif de la consultation</ion-label>
+            <ion-textarea [(ngModel)]="appointmentReason" name="reason" rows="3"></ion-textarea>
+          </ion-item>
+          
+          <ion-button expand="block" type="submit" color="medical" class="booking-button">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            Confirmer le rendez-vous
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Login Prompt for Non-Logged In Users -->
+  <div class="login-prompt" *ngIf="!isLoggedIn">
+    <ion-card>
+      <ion-card-content>
+        <div class="prompt-content">
+          <ion-icon name="lock-closed-outline" color="medical"></ion-icon>
+          <h2>Connectez-vous pour prendre rendez-vous</h2>
+          <p>Vous devez être connecté pour réserver une consultation avec ce médecin</p>
+          <ion-button expand="block" color="medical" (click)="goToLogin()">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Se connecter
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="medical" (click)="goToRegister()">
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            S'inscrire
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
